@@ -87,4 +87,22 @@
   document.addEventListener("mousedown", function (e) {   // cancel browser history nav on side buttons
     if ((e.button === 3 || e.button === 4) && inReader() && find(e.button === 4 ? "next" : "prev")) e.preventDefault();
   }, true);
+
+  // touch: horizontal swipe changes chapter (phones/tablets have no arrows or side buttons)
+  var sx = 0, sy = 0, st = 0, tracking = false;
+  document.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) { tracking = false; return; }
+    var t = e.touches[0];
+    sx = t.clientX; sy = t.clientY; st = Date.now(); tracking = true;
+  }, { passive: true, capture: true });
+  document.addEventListener("touchend", function (e) {
+    if (!tracking) return;
+    tracking = false;
+    var t = (e.changedTouches && e.changedTouches[0]); if (!t) return;
+    var dx = t.clientX - sx, dy = t.clientY - sy, dt = Date.now() - st;
+    if (dt > 800) return;                                  // too slow to be a swipe
+    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.6) return;  // not a clear horizontal swipe
+    // swipe left (finger moves left, content advances) → next; swipe right → prev
+    go(dx < 0 ? "next" : "prev");
+  }, { passive: true, capture: true });
 })();
