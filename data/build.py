@@ -299,6 +299,22 @@ def build():
         books.append(book)
         print("%-14s %2d chapters  ~%5d %s" % (fid, len(chapters), words,
               "zh-chars" if (fid in ZH or zh_edition) else "words"))
+    # append Chinese-translation editions of the English classics (English originals kept)
+    en2zh = json.load(open(os.path.join(os.path.dirname(__file__), "translations_en2zh.json"),
+                           encoding="utf-8"))
+    cat_of = {b["id"]: b["category"] for b in books}
+    blurb_of = {b["id"]: b["blurb"] for b in books}
+    for bid, t in en2zh.items():
+        chapters = [{"title": c["title"], "type": "prose", "paragraphs": c["paragraphs"]}
+                    for c in t["chapters"]]
+        words = sum(len("".join(c["paragraphs"])) for c in chapters)
+        books.append({
+            "id": bid + "_zh", "title": t["title"], "author": t["author"],
+            "category": cat_of.get(bid, "fiction"), "blurb": blurb_of.get(bid, ""),
+            "words": words, "chapters": chapters, "edition": "中译本 · 经典名著",
+        })
+        print("%-14s %2d chapters  ~%5d zh-chars" % (bid + "_zh", len(chapters), words))
+
     data = {
         "source": "Project Gutenberg (public domain)",
         "categories": [{"id": c, "name": n, "tagline": t} for c, n, t in CATEGORIES],
