@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAISON — The Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0c0c0c;
+    --ink:#111;
+    --paper:#fbfaf8;
+    --line:#1a1a1a;
+    --grey:#7a7a7a;
+    --accent:#9a0f17; /* single restrained couture red */
+    --track:.42em;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;background:none;border:none;color:inherit}
+  ::selection{background:var(--black);color:var(--paper)}
+
+  .label{font-family:'Inter';font-weight:500;text-transform:uppercase;letter-spacing:var(--track);font-size:.66rem}
+  .rule{height:1px;background:var(--line);border:0}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:0 clamp(20px,5vw,64px)}
+
+  /* ---------- masthead ---------- */
+  header.mast{padding:30px 0 18px;border-bottom:1px solid var(--line)}
+  .mast-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  .mast-top .issue{font-family:'Inter';font-weight:500;text-transform:uppercase;letter-spacing:var(--track);font-size:.62rem;color:var(--grey)}
+  .logo{font-family:'Bodoni Moda',serif;font-weight:400;font-size:clamp(2.4rem,8vw,5.2rem);letter-spacing:.18em;line-height:.9;margin:6px 0 0;text-indent:.18em}
+  .logo-sub{font-family:'Inter';text-transform:uppercase;letter-spacing:.7em;font-size:.6rem;color:var(--grey);text-align:center;margin-top:10px;text-indent:.7em}
+  .brandbtn{display:block;width:100%;text-align:center}
+
+  /* ---------- filters ---------- */
+  nav.filters{display:flex;flex-wrap:wrap;justify-content:center;gap:0;border-bottom:1px solid var(--line)}
+  nav.filters .f{
+    padding:16px 22px;text-transform:uppercase;letter-spacing:var(--track);font-size:.66rem;font-weight:500;
+    color:var(--grey);position:relative;transition:color .3s;
+  }
+  nav.filters .f + .f{border-left:1px solid #e3e1dc}
+  nav.filters .f:hover{color:var(--black)}
+  nav.filters .f[data-on="1"]{color:var(--black)}
+  nav.filters .f[data-on="1"]::after{content:"";position:absolute;left:22px;right:22px;bottom:8px;height:1px;background:var(--accent)}
+
+  /* ---------- library grid ---------- */
+  .lib{padding:40px 0 90px}
+  .sechead{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin:48px 0 30px}
+  .sechead:first-child{margin-top:6px}
+  .sechead h2{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(1.6rem,4vw,2.6rem);margin:0;font-style:italic}
+  .sechead .n{font-family:'Bodoni Moda';font-size:1rem;color:var(--grey)}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,4vw,56px) clamp(18px,3vw,40px)}
+  @media(max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.grid{grid-template-columns:1fr}}
+
+  .card{text-align:left;width:100%;display:block}
+  .plate{
+    aspect-ratio:3/4;position:relative;overflow:hidden;background:#101010;color:#fff;
+    border:1px solid var(--line);
+  }
+  .plate .frame{position:absolute;inset:10px;border:1px solid rgba(255,255,255,.5);pointer-events:none}
+  .plate .pnum{position:absolute;top:18px;left:18px;font-family:'Bodoni Moda';font-size:.8rem;letter-spacing:.2em;opacity:.7}
+  .plate .pcat{position:absolute;top:18px;right:18px;font-family:'Inter';text-transform:uppercase;letter-spacing:.3em;font-size:.52rem;opacity:.7}
+  .plate .ptitle{position:absolute;left:20px;right:20px;bottom:54px;font-family:'Playfair Display',serif;font-weight:600;font-size:clamp(1.3rem,2.6vw,1.9rem);line-height:1.0}
+  .plate .pauth{position:absolute;left:20px;bottom:24px;font-family:'Inter';text-transform:uppercase;letter-spacing:.32em;font-size:.56rem;opacity:.85}
+  .plate .bigletter{position:absolute;font-family:'Bodoni Moda',serif;font-weight:500;color:rgba(255,255,255,.07);font-size:22rem;line-height:.7;right:-3rem;bottom:-6rem;user-select:none}
+  .plate.alt{background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+  .plate.alt .frame{border-color:rgba(0,0,0,.35)}
+  .plate.alt .bigletter{color:rgba(0,0,0,.05)}
+  .card .cap{padding-top:14px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid var(--line);margin-top:14px}
+  .card .cap .ct{font-family:'Playfair Display';font-weight:500;font-style:italic;font-size:1.05rem;line-height:1.1}
+  .card .cap .ca{font-family:'Inter';text-transform:uppercase;letter-spacing:.2em;font-size:.56rem;color:var(--grey);white-space:nowrap}
+  .card .plate{transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+  .card:hover .plate{transform:translateY(-6px)}
+
+  /* ---------- detail ---------- */
+  .backrow{padding:26px 0 0}
+  .backbtn{text-transform:uppercase;letter-spacing:var(--track);font-size:.62rem;font-weight:500;color:var(--grey);transition:color .3s}
+  .backbtn:hover{color:var(--black)}
+  .detail{display:grid;grid-template-columns:minmax(0,42%) 1fr;gap:clamp(30px,6vw,80px);padding:30px 0 100px;align-items:start}
+  @media(max-width:820px){.detail{grid-template-columns:1fr;gap:34px}}
+  .detail .plate{max-width:440px}
+  .detail .dinfo .dcat{color:var(--accent);margin-bottom:18px}
+  .detail .dinfo h1{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(2.6rem,7vw,5rem);line-height:.96;margin:0 0 .15em;letter-spacing:-.01em}
+  .detail .dinfo .dby{font-family:'Bodoni Moda',serif;font-style:italic;font-size:1.3rem;color:var(--grey);margin-bottom:26px}
+  .detail .dblurb{font-family:'Playfair Display',serif;font-size:1.35rem;line-height:1.55;font-weight:400;max-width:34em;margin:0 0 8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:24px 0}
+  .detail .dblurb::first-letter{initial-letter:2;font-weight:700;color:var(--accent);margin-right:.06em}
+  .startbtn{margin:30px 0 6px;border:1px solid var(--black);background:var(--black);color:var(--paper);text-transform:uppercase;letter-spacing:var(--track);font-size:.66rem;font-weight:500;padding:16px 34px;transition:.35s}
+  .startbtn:hover{background:var(--paper);color:var(--black)}
+  .index h3{text-transform:uppercase;letter-spacing:var(--track);font-size:.66rem;color:var(--grey);margin:46px 0 0;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .chrow{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:baseline;width:100%;text-align:left;padding:18px 0;border-bottom:1px solid #e3e1dc;transition:.35s}
+  .chrow:hover{padding-left:10px;background:linear-gradient(90deg,rgba(0,0,0,.03),transparent)}
+  .chrow .cn{font-family:'Bodoni Moda',serif;font-size:1.1rem;color:var(--accent);width:2.4em}
+  .chrow .ctt{font-family:'Playfair Display',serif;font-weight:500;font-size:1.25rem;font-style:italic}
+  .chrow .ck{text-transform:uppercase;letter-spacing:.28em;font-size:.54rem;color:var(--grey);white-space:nowrap}
+
+  /* ---------- reader ---------- */
+  .rbar{position:sticky;top:0;z-index:9;background:rgba(251,250,248,.93);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .rbar-in{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:13px 0}
+  .rbtn{text-transform:uppercase;letter-spacing:.28em;font-size:.58rem;font-weight:500;color:var(--grey);padding:8px 12px;transition:.3s;white-space:nowrap}
+  .rbtn:hover:not(:disabled){color:var(--black)}
+  .rbtn:disabled{opacity:.3;cursor:default}
+  .rbar .sep{width:1px;height:18px;background:#d6d4cf}
+  .rsel{font-family:'Bodoni Moda',serif;font-size:.85rem;color:var(--ink);padding:8px 10px;border:1px solid var(--line);background:var(--paper);max-width:42vw;cursor:pointer}
+  .fonts{margin-left:auto;display:flex;align-items:center;gap:4px}
+  .fonts .rbtn{border:1px solid var(--line);min-width:36px;text-align:center}
+
+  .reading{max-width:660px;margin:0 auto;padding:64px 0 110px}
+  .reading .rkick{text-align:center;text-transform:uppercase;letter-spacing:.5em;font-size:.6rem;color:var(--accent);margin-bottom:22px;text-indent:.5em}
+  .reading h1{font-family:'Playfair Display',serif;font-weight:600;font-size:clamp(2rem,6vw,3.6rem);line-height:1.02;text-align:center;margin:0 0 18px}
+  .reading .rof{text-align:center;font-family:'Bodoni Moda',serif;font-style:italic;color:var(--grey);font-size:1rem;margin-bottom:14px}
+  .reading .orn{text-align:center;letter-spacing:.6em;color:var(--accent);font-size:.9rem;margin:6px 0 54px}
+  .prose{font-family:'Playfair Display',serif;font-weight:400;font-size:var(--fs,1.22rem);line-height:1.85;color:#16140f}
+  .prose p{margin:0 0 1.5em;text-align:justify;text-justify:inter-word;hyphens:auto}
+  .prose p:first-of-type{text-align:left}
+  .prose p:first-of-type::first-letter{font-family:'Bodoni Moda',serif;font-weight:500;font-size:4.4em;line-height:.7;float:left;margin:.04em .1em 0 0;color:var(--accent)}
+  .verse{font-family:'Playfair Display',serif;font-size:var(--fs,1.22rem);line-height:1.7;text-align:center}
+  .verse .stanza{margin:0 0 1.6em}
+  .verse .vline{display:block;white-space:pre-wrap}
+  .rend{text-align:center;margin:64px 0 0}
+  .rend .orn{margin:0 0 26px}
+  .rnav{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:22px;gap:14px}
+  .rnav .rbtn{font-size:.62rem;letter-spacing:.3em}
+
+  .view{animation:fade .55s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .hidden{display:none}
+  :focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="mast-top">
+      <span class="issue">No. XIV — Spring</span>
+      <span class="issue">The Library Edition</span>
+    </div>
+    <button class="brandbtn" id="brandBtn" aria-label="Home">
+      <span class="logo">MAISON</span>
+      <span class="logo-sub">a couture library</span>
+    </button>
+  </header>
+</div>
+
+<!-- LIBRARY -->
+<section id="view-library" class="view">
+  <div class="wrap">
+    <nav class="filters" id="filters"></nav>
+    <div class="lib" id="shelves"></div>
+  </div>
+</section>
+
+<!-- DETAIL -->
+<section id="view-detail" class="view hidden"><div class="wrap" id="detailIn"></div></section>
+
+<!-- READER -->
+<section id="view-reader" class="view hidden"></section>
+
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  var DATA=window.BOOKS, cats=DATA.categories, books=DATA.books;
+  var catName={}, catIdx={};
+  cats.forEach(function(c,i){catName[c.id]=c.name;catIdx[c.id]=i;});
+  var roman=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV'];
+
+  var els={
+    library:document.getElementById('view-library'),
+    detail:document.getElementById('view-detail'),
+    reader:document.getElementById('view-reader'),
+    filters:document.getElementById('filters'),
+    shelves:document.getElementById('shelves'),
+    detailIn:document.getElementById('detailIn')
+  };
+  var state={filter:'all',book:null,chapter:0,fs:1.22};
+
+  function show(v){['library','detail','reader'].forEach(function(x){els[x].classList.toggle('hidden',x!==v);});window.scrollTo({top:0,behavior:'instant'});}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  function plate(b,i,alt,withNum){
+    var letter=(b.title[0]||'').toUpperCase();
+    return '<div class="plate'+(alt?' alt':'')+'">'+
+      '<div class="frame"></div>'+
+      '<span class="bigletter">'+esc(letter)+'</span>'+
+      (withNum!==false?'<span class="pnum">'+(roman[i]||(i+1))+'</span>':'')+
+      '<span class="pcat">'+esc(catName[b.category])+'</span>'+
+      '<span class="ptitle">'+esc(b.title)+'</span>'+
+      '<span class="pauth">'+esc(b.author)+'</span>'+
+    '</div>';
+  }
+
+  /* filters */
+  function renderFilters(){
+    var h='<button class="f" data-cat="all" data-on="1">All</button>';
+    cats.forEach(function(c){h+='<button class="f" data-cat="'+c.id+'" data-on="0">'+esc(c.name)+'</button>';});
+    els.filters.innerHTML=h;
+    Array.prototype.forEach.call(els.filters.querySelectorAll('.f'),function(f){
+      f.addEventListener('click',function(){
+        state.filter=f.getAttribute('data-cat');
+        Array.prototype.forEach.call(els.filters.querySelectorAll('.f'),function(o){o.setAttribute('data-on',o.getAttribute('data-cat')===state.filter?'1':'0');});
+        renderShelves();
+      });
+    });
+  }
+
+  function card(b,gi){
+    var alt = gi%2===1;
+    return '<button class="card" data-id="'+b.id+'">'+
+      plate(b,gi,alt)+
+      '<span class="cap"><span class="ct">'+esc(b.title)+'</span><span class="ca">'+esc(b.author)+'</span></span>'+
+    '</button>';
+  }
+
+  function renderShelves(){
+    var groups = state.filter==='all'?cats.map(function(c){return c.id;}):[state.filter];
+    var h='';
+    groups.forEach(function(cid){
+      var c=cats[catIdx[cid]];
+      var list=books.filter(function(b){return b.category===cid;});
+      if(!list.length)return;
+      h+='<div class="sechead"><h2>'+esc(c.name)+'</h2><span class="n">'+esc(c.tagline)+'</span></div>'+
+         '<div class="grid">'+list.map(function(b,i){return card(b,i);}).join('')+'</div>';
+    });
+    els.shelves.innerHTML=h;
+    Array.prototype.forEach.call(els.shelves.querySelectorAll('.card'),function(cd){
+      cd.addEventListener('click',function(){openDetail(cd.getAttribute('data-id'));});
+    });
+  }
+
+  /* detail */
+  function openDetail(id){
+    var b=books.find(function(x){return x.id===id;});
+    state.book=b;
+    var ch=b.chapters.map(function(c,i){
+      var k=c.type==='verse'?'Verse':'Prose';
+      return '<button class="chrow" data-ci="'+i+'"><span class="cn">'+(roman[i]||(i+1))+'</span>'+
+        '<span class="ctt">'+esc(c.title)+'</span><span class="ck">'+k+'</span></button>';
+    }).join('');
+    els.detailIn.innerHTML=
+      '<div class="backrow"><button class="backbtn" id="d-back">← Return to the library</button></div>'+
+      '<div class="detail">'+
+        '<div>'+plate(b,catIdx[b.category],false,false)+'</div>'+
+        '<div class="dinfo">'+
+          '<div class="label dcat">'+esc(catName[b.category])+'</div>'+
+          '<h1>'+esc(b.title)+'</h1>'+
+          '<div class="dby">by '+esc(b.author)+'</div>'+
+          '<p class="dblurb">'+esc(b.blurb)+'</p>'+
+          '<button class="startbtn" id="d-start">Begin Reading</button>'+
+          '<div class="index"><h3>Contents</h3>'+ch+'</div>'+
+        '</div>'+
+      '</div>';
+    document.getElementById('d-back').addEventListener('click',function(){show('library');});
+    document.getElementById('d-start').addEventListener('click',function(){openReader(b,0);});
+    Array.prototype.forEach.call(els.detailIn.querySelectorAll('.chrow'),function(r){
+      r.addEventListener('click',function(){openReader(b,parseInt(r.getAttribute('data-ci'),10));});
+    });
+    show('detail');
+  }
+
+  /* reader */
+  function body(c){
+    if(c.type==='verse'){
+      var out='<div class="verse">',st='';
+      function flush(){if(st){out+='<div class="stanza">'+st+'</div>';st='';}}
+      (c.lines||[]).forEach(function(l){if(l.trim()===''){flush();}else{st+='<span class="vline">'+esc(l)+'</span>';}});
+      flush();return out+'</div>';
+    }
+    return '<div class="prose">'+(c.paragraphs||[]).map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'</div>';
+  }
+
+  function openReader(b,ci){state.book=b;state.chapter=ci;renderReader();show('reader');}
+
+  function renderReader(){
+    var b=state.book,ci=state.chapter,c=b.chapters[ci];
+    var opts=b.chapters.map(function(ch,i){return '<option value="'+i+'"'+(i===ci?' selected':'')+'>'+esc((roman[i]||(i+1))+'. '+ch.title)+'</option>';}).join('');
+    els.reader.innerHTML=
+      '<div class="rbar"><div class="wrap"><div class="rbar-in">'+
+        '<button class="rbtn" id="r-book">Contents</button>'+
+        '<button class="rbtn" id="r-home">Library</button>'+
+        '<span class="sep"></span>'+
+        '<button class="rbtn" id="r-prev" '+(ci===0?'disabled':'')+'>← Prev</button>'+
+        '<select class="rsel" id="r-jump" aria-label="Jump to chapter">'+opts+'</select>'+
+        '<button class="rbtn" id="r-next" '+(ci===b.chapters.length-1?'disabled':'')+'>Next →</button>'+
+        '<span class="fonts"><button class="rbtn" id="r-minus" aria-label="Smaller">A−</button>'+
+        '<button class="rbtn" id="r-plus" aria-label="Larger">A+</button></span>'+
+      '</div></div></div>'+
+      '<div class="wrap"><article class="reading" style="--fs:'+state.fs+'rem">'+
+        '<div class="rkick">'+esc(catName[b.category])+' — Chapter '+(roman[ci]||(ci+1))+'</div>'+
+        '<h1>'+esc(c.title)+'</h1>'+
+        '<div class="rof">from <i>'+esc(b.title)+'</i> · '+esc(b.author)+'</div>'+
+        '<div class="orn">— ❖ —</div>'+
+        body(c)+
+        '<div class="rend"><div class="orn">— ❖ —</div>'+
+          '<div class="rnav">'+
+            '<button class="rbtn" id="r-prev2" '+(ci===0?'disabled':'')+'>← Previous chapter</button>'+
+            '<button class="rbtn" id="r-next2" '+(ci===b.chapters.length-1?'disabled':'')+'>Next chapter →</button>'+
+          '</div>'+
+        '</div>'+
+      '</article></div>';
+    function go(d){var n=ci+d;if(n>=0&&n<b.chapters.length){state.chapter=n;renderReader();window.scrollTo({top:0,behavior:'smooth'});}}
+    document.getElementById('r-book').addEventListener('click',function(){openDetail(b.id);});
+    document.getElementById('r-home').addEventListener('click',function(){show('library');});
+    document.getElementById('r-prev').addEventListener('click',function(){go(-1);});
+    document.getElementById('r-next').addEventListener('click',function(){go(1);});
+    document.getElementById('r-prev2').addEventListener('click',function(){go(-1);});
+    document.getElementById('r-next2').addEventListener('click',function(){go(1);});
+    document.getElementById('r-jump').addEventListener('change',function(e){state.chapter=parseInt(e.target.value,10);renderReader();window.scrollTo({top:0,behavior:'smooth'});});
+    document.getElementById('r-minus').addEventListener('click',function(){state.fs=Math.max(0.95,state.fs-0.1);renderReader();});
+    document.getElementById('r-plus').addEventListener('click',function(){state.fs=Math.min(1.8,state.fs+0.1);renderReader();});
+  }
+
+  document.getElementById('brandBtn').addEventListener('click',function(){show('library');});
+  renderFilters();renderShelves();show('library');
+})();
+</script>
+</body>
+</html>

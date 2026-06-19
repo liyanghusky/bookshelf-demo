@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Gilded Page — A Deco Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0a0a0c;
+  --ink:#101014;
+  --panel:#15151a;
+  --gold:#d4af37;
+  --gold-soft:#e8d28a;
+  --gold-deep:#a8862a;
+  --emerald:#0d5c4a;
+  --emerald-deep:#093b30;
+  --cream:#efe7d2;
+  --muted:#9a937f;
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(13,92,74,.22), transparent 60%),
+    radial-gradient(ellipse at 50% 120%, rgba(212,175,55,.10), transparent 55%),
+    var(--black);
+  color:var(--cream);
+  font-family:'Cormorant Garamond', Georgia, serif;
+  font-size:18px;
+  line-height:1.6;
+  min-height:100vh;
+  letter-spacing:.2px;
+  cursor:default;
+}
+::selection{background:var(--gold);color:var(--black)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;color:inherit;background:none;border:none}
+
+/* ---------- frame & sunburst ornament ---------- */
+.deco-rays{
+  position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background:
+    repeating-conic-gradient(from 90deg at 50% 0%,
+      rgba(212,175,55,.05) 0deg 2deg, transparent 2deg 10deg);
+  mask:linear-gradient(to bottom, #000, transparent 45%);
+}
+.wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 22px 80px}
+
+/* ---------- top masthead ---------- */
+header.mast{padding:34px 0 18px;text-align:center;position:relative}
+.mast .rule-set{display:flex;align-items:center;justify-content:center;gap:14px;color:var(--gold)}
+.mast .rule-set .ln{height:1px;background:linear-gradient(90deg,transparent,var(--gold));flex:1;max-width:240px}
+.mast .rule-set .ln.r{background:linear-gradient(90deg,var(--gold),transparent)}
+.diamond{width:10px;height:10px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 0 4px rgba(212,175,55,.12)}
+.mast h1{
+  font-family:'Limelight',serif;
+  font-weight:400;
+  font-size:clamp(30px,6vw,62px);
+  margin:16px 0 4px;
+  letter-spacing:.14em;
+  color:var(--gold-soft);
+  text-shadow:0 2px 0 rgba(0,0,0,.6);
+  line-height:1;
+}
+.mast .sub{
+  font-family:'Poiret One',sans-serif;
+  letter-spacing:.42em;
+  text-transform:uppercase;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:8px;
+}
+.fan{display:inline-block;margin-top:18px}
+.fan svg{display:block}
+
+/* ---------- filter bar ---------- */
+.filters{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:30px 0 8px}
+.filters button{
+  font-family:'Poiret One',sans-serif;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  font-size:12px;
+  padding:9px 18px;
+  border:1px solid var(--gold-deep);
+  color:var(--gold-soft);
+  background:linear-gradient(180deg,rgba(212,175,55,.06),transparent);
+  transition:.25s;
+  position:relative;
+}
+.filters button::before,.filters button::after{
+  content:"";position:absolute;width:6px;height:6px;border:1px solid var(--gold);
+}
+.filters button::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.filters button::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.filters button:hover{background:rgba(212,175,55,.14);color:#fff}
+.filters button.active{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.filters button.active::before,.filters button.active::after{border-color:var(--black)}
+
+/* ---------- library grid ---------- */
+.cat-band{margin:46px 0 22px;text-align:center}
+.cat-band h2{
+  font-family:'Limelight',serif;font-weight:400;font-size:24px;letter-spacing:.18em;
+  color:var(--gold-soft);margin:0;
+}
+.cat-band .tl{font-family:'Poiret One',sans-serif;letter-spacing:.34em;text-transform:uppercase;font-size:10px;color:var(--muted);margin-top:6px}
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:26px;
+}
+.card{
+  background:linear-gradient(180deg,#101319,#0b0b0e);
+  border:1px solid var(--gold-deep);
+  padding:14px;
+  position:relative;
+  transition:transform .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s;
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,.6),0 0 0 1px var(--gold)}
+.card:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.cover{
+  aspect-ratio:2/3;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,var(--emerald-deep),var(--black) 70%);
+  border:1px solid var(--gold-deep);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:18px 16px;
+}
+.cover .emblem{position:absolute;inset:0;opacity:.5}
+.cover .ctitle{
+  font-family:'Poiret One',sans-serif;position:relative;z-index:2;
+  font-size:clamp(15px,2.3vw,20px);letter-spacing:.06em;color:var(--gold-soft);
+  text-transform:uppercase;line-height:1.2;text-shadow:0 1px 2px #000;
+}
+.cover .cauth{
+  font-family:'Cormorant Garamond',serif;position:relative;z-index:2;
+  font-style:italic;font-size:13px;color:var(--cream);margin-top:8px;opacity:.85;
+}
+.cover .cband{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--gold);opacity:.5;z-index:1}
+.card .meta{padding:12px 4px 4px;text-align:center}
+.card .meta .t{font-family:'Limelight',serif;font-size:15px;letter-spacing:.05em;color:var(--gold-soft);line-height:1.2}
+.card .meta .a{font-style:italic;font-size:14px;color:var(--muted);margin-top:4px}
+
+/* ---------- detail ---------- */
+.detail{max-width:880px;margin:0 auto}
+.back{
+  font-family:'Poiret One',sans-serif;letter-spacing:.24em;text-transform:uppercase;font-size:11px;
+  color:var(--gold-soft);padding:8px 0;display:inline-flex;align-items:center;gap:8px;transition:.2s
+}
+.back:hover{color:#fff;gap:12px}
+.detail .head{display:grid;grid-template-columns:200px 1fr;gap:36px;margin-top:18px;align-items:start}
+.detail .cover{margin:0}
+.detail .info h2{font-family:'Limelight',serif;font-weight:400;font-size:clamp(26px,4vw,40px);letter-spacing:.05em;color:var(--gold-soft);margin:.1em 0 .15em;line-height:1.05}
+.detail .info .by{font-style:italic;font-size:20px;color:var(--cream)}
+.detail .info .cat{
+  display:inline-block;margin:16px 0;font-family:'Poiret One',sans-serif;letter-spacing:.28em;
+  text-transform:uppercase;font-size:11px;color:var(--black);background:var(--gold);padding:5px 14px;
+}
+.detail .info .blurb{font-size:19px;line-height:1.7;color:#d8d0bb;max-width:46ch}
+.start{
+  margin-top:22px;font-family:'Poiret One',sans-serif;letter-spacing:.24em;text-transform:uppercase;font-size:13px;
+  padding:13px 26px;border:1px solid var(--gold);color:var(--gold-soft);
+  background:linear-gradient(180deg,rgba(212,175,55,.12),transparent);transition:.25s;position:relative
+}
+.start:hover{background:var(--gold);color:var(--black)}
+.divider{display:flex;align-items:center;gap:14px;margin:38px 0 22px;color:var(--gold)}
+.divider .ln{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-deep),transparent)}
+.divider span{font-family:'Limelight',serif;font-size:16px;letter-spacing:.2em;color:var(--gold-soft)}
+.chlist{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--gold-deep)}
+.chlist li{background:var(--ink)}
+.chlist button{
+  width:100%;text-align:left;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;
+  font-size:18px;color:var(--cream);transition:.2s;letter-spacing:.04em
+}
+.chlist button:hover{background:rgba(212,175,55,.1);color:#fff;padding-left:26px}
+.chlist .num{font-family:'Poiret One',sans-serif;color:var(--gold);font-size:13px;letter-spacing:.2em}
+.chlist .tag{font-family:'Poiret One',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border:1px solid var(--gold-deep);padding:2px 8px}
+
+/* ---------- reader ---------- */
+.reader{max-width:760px;margin:0 auto}
+.rtop{
+  position:sticky;top:0;z-index:5;background:rgba(10,10,12,.92);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--gold-deep);padding:12px 0;margin-bottom:30px;
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between
+}
+.rtop .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctrl{
+  font-family:'Poiret One',sans-serif;letter-spacing:.14em;text-transform:uppercase;font-size:11px;
+  border:1px solid var(--gold-deep);color:var(--gold-soft);padding:8px 14px;transition:.2s;background:linear-gradient(180deg,rgba(212,175,55,.05),transparent)
+}
+.ctrl:hover:not(:disabled){background:var(--gold);color:var(--black)}
+.ctrl:disabled{opacity:.32;cursor:not-allowed}
+.rtop select{
+  font-family:'Poiret One',sans-serif;letter-spacing:.08em;font-size:12px;
+  background:var(--ink);color:var(--gold-soft);border:1px solid var(--gold-deep);padding:8px 10px;cursor:pointer
+}
+.rhead{text-align:center;margin-bottom:30px}
+.rhead .bk{font-style:italic;color:var(--muted);font-size:15px}
+.rhead h2{font-family:'Limelight',serif;font-weight:400;font-size:clamp(24px,4vw,38px);letter-spacing:.08em;color:var(--gold-soft);margin:.2em 0}
+.rhead .orn{color:var(--gold);font-size:18px;letter-spacing:.5em;margin-top:6px}
+.prose{font-size:var(--rfs,20px);line-height:1.85;color:#e7ddc6}
+.prose p{margin:0 0 1.3em;text-indent:1.6em}
+.prose p:first-of-type{text-indent:0}
+.prose p:first-of-type::first-letter{
+  font-family:'Limelight',serif;float:left;font-size:3.6em;line-height:.78;padding:6px 12px 0 0;color:var(--gold);
+}
+.verse{font-size:var(--rfs,20px);line-height:1.95;color:#e7ddc6;text-align:center}
+.verse .stanza{margin:0 0 1.6em}
+.verse .ln{white-space:pre-wrap}
+.rnav{display:flex;justify-content:space-between;gap:12px;margin:50px 0 10px;border-top:1px solid var(--gold-deep);padding-top:22px}
+.empty{text-align:center;padding:70px 0;color:var(--muted);font-style:italic;font-size:20px}
+
+@media(max-width:640px){
+  body{font-size:17px}
+  .detail .head{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .detail .info .blurb{max-width:none}
+  .detail .info{text-align:center}
+}
+</style>
+</head>
+<body>
+<div class="deco-rays"></div>
+<div class="wrap">
+  <header class="mast">
+    <div class="rule-set"><span class="ln"></span><span class="diamond"></span><span class="ln r"></span></div>
+    <h1>The Gilded Page</h1>
+    <div class="sub">A Reading Salon &middot; Established MCMXXV</div>
+    <div class="fan" aria-hidden="true">
+      <svg width="120" height="34" viewBox="0 0 120 34">
+        <g fill="none" stroke="#d4af37" stroke-width="1">
+          <path d="M60 32 L20 4 M60 32 L34 2 M60 32 L48 1 M60 32 L60 0 M60 32 L72 1 M60 32 L86 2 M60 32 L100 4"/>
+          <path d="M60 32 m-46 0 a46 30 0 0 1 92 0" opacity=".5"/>
+        </g>
+        <circle cx="60" cy="32" r="3" fill="#d4af37"/>
+      </svg>
+    </div>
+  </header>
+
+  <main id="app"></main>
+</div>
+
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  var D = window.BOOKS;
+  var app = document.getElementById('app');
+  var state = { view:'library', filter:'all', bookId:null, chapter:0, fs:20 };
+  var catName = {}; D.categories.forEach(function(c){catName[c.id]=c.name;});
+  var catTag = {}; D.categories.forEach(function(c){catTag[c.id]=c.tagline;});
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  // convert _emphasis_ to italic, keep curly quotes
+  function rich(s){
+    return esc(s).replace(/_([^_]+)_/g,'<em>$1</em>');
+  }
+  function bookById(id){return D.books.filter(function(b){return b.id===id;})[0];}
+
+  // deterministic emblem per book
+  function emblem(book){
+    var palette = {
+      fiction:['#0d5c4a','#d4af37'], mystery:['#1a2740','#d4af37'],
+      scifi:['#241540','#e8d28a'], philosophy:['#3a2a12','#d4af37'], poetry:['#3a1224','#e8d28a']
+    };
+    var p = palette[book.category]||['#0d5c4a','#d4af37'];
+    var seed = book.id.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0);
+    var variant = seed % 3;
+    var rays='';
+    for(var i=0;i<12;i++){var a=(i/12)*Math.PI*2; rays+='<line x1="50" y1="75" x2="'+(50+Math.cos(a)*60).toFixed(1)+'" y2="'+(75+Math.sin(a)*60).toFixed(1)+'"/>';}
+    var motif;
+    if(variant===0){ // sunburst
+      motif='<g stroke="'+p[1]+'" stroke-width=".8" opacity=".55">'+rays+'</g><circle cx="50" cy="75" r="14" fill="none" stroke="'+p[1]+'" stroke-width="1.2"/>';
+    } else if(variant===1){ // chevron stack
+      motif='<g stroke="'+p[1]+'" stroke-width="1.4" fill="none" opacity=".6">'+
+        '<path d="M20 40 L50 22 L80 40"/><path d="M20 58 L50 40 L80 58"/><path d="M20 76 L50 58 L80 76"/><path d="M20 94 L50 76 L80 94"/></g>';
+    } else { // fan / stepped
+      motif='<g stroke="'+p[1]+'" stroke-width="1" fill="none" opacity=".6">'+
+        '<path d="M50 110 A50 50 0 0 1 50 24" /><path d="M50 110 A40 40 0 0 1 50 34"/><path d="M50 110 A30 30 0 0 1 50 44"/><path d="M50 110 A20 20 0 0 1 50 54"/>'+
+        '<line x1="20" y1="110" x2="80" y2="110"/></g>';
+    }
+    return '<svg class="emblem" viewBox="0 0 100 150" preserveAspectRatio="xMidYMid slice">'+
+      '<rect width="100" height="150" fill="'+p[0]+'" opacity=".35"/>'+
+      '<rect x="6" y="6" width="88" height="138" fill="none" stroke="'+p[1]+'" stroke-width=".6" opacity=".5"/>'+
+      motif+'</svg>';
+  }
+
+  function coverHTML(book,big){
+    return '<div class="cover">'+emblem(book)+
+      '<div class="cband"></div>'+
+      '<div class="ctitle">'+esc(book.title)+'</div>'+
+      '<div class="cauth">'+esc(book.author)+'</div></div>';
+  }
+
+  /* ---------- LIBRARY ---------- */
+  function renderLibrary(){
+    var html='';
+    html+='<div class="filters" role="tablist">';
+    html+='<button data-f="all" class="'+(state.filter==='all'?'active':'')+'">All</button>';
+    D.categories.forEach(function(c){
+      html+='<button data-f="'+c.id+'" class="'+(state.filter===c.id?'active':'')+'">'+esc(c.name)+'</button>';
+    });
+    html+='</div>';
+
+    var cats = state.filter==='all' ? D.categories : D.categories.filter(function(c){return c.id===state.filter;});
+    cats.forEach(function(c){
+      var books = D.books.filter(function(b){return b.category===c.id;});
+      if(!books.length) return;
+      html+='<section><div class="cat-band"><h2>'+esc(c.name)+'</h2><div class="tl">'+esc(c.tagline)+'</div></div>';
+      html+='<div class="grid">';
+      books.forEach(function(b){
+        html+='<a class="card" tabindex="0" role="button" data-book="'+b.id+'" aria-label="Open '+esc(b.title)+'">'+
+          coverHTML(b)+
+          '<div class="meta"><div class="t">'+esc(b.title)+'</div><div class="a">'+esc(b.author)+'</div></div></a>';
+      });
+      html+='</div></section>';
+    });
+    app.innerHTML=html;
+  }
+
+  /* ---------- DETAIL ---------- */
+  function renderDetail(){
+    var b=bookById(state.bookId);
+    var html='<div class="detail">';
+    html+='<button class="back" data-nav="library">&#8592; The Library</button>';
+    html+='<div class="head">'+coverHTML(b,true)+
+      '<div class="info"><h2>'+esc(b.title)+'</h2><div class="by">by '+esc(b.author)+'</div>'+
+      '<div class="cat">'+esc(catName[b.category])+'</div>'+
+      '<p class="blurb">'+esc(b.blurb)+'</p>'+
+      '<button class="start" data-read="0">Begin Reading &#8594;</button></div></div>';
+    html+='<div class="divider"><span class="ln"></span><span>Contents</span><span class="ln"></span></div>';
+    html+='<ul class="chlist">';
+    b.chapters.forEach(function(ch,i){
+      html+='<li><button data-read="'+i+'"><span><span class="num">'+roman(i+1)+'</span> &nbsp; '+esc(ch.title)+'</span>'+
+        '<span class="tag">'+(ch.type==='verse'?'Verse':'Prose')+'</span></button></li>';
+    });
+    html+='</ul></div>';
+    app.innerHTML=html;
+    window.scrollTo(0,0);
+  }
+  function roman(n){
+    var m=[['X',10],['IX',9],['V',5],['IV',4],['I',1]],r='';
+    m.forEach(function(p){while(n>=p[1]){r+=p[0];n-=p[1];}});return r;
+  }
+
+  /* ---------- READER ---------- */
+  function renderReader(){
+    var b=bookById(state.bookId);
+    var ch=b.chapters[state.chapter];
+    var html='<div class="reader">';
+    html+='<div class="rtop">'+
+      '<div class="grp">'+
+        '<button class="ctrl" data-nav="library">Library</button>'+
+        '<button class="ctrl" data-nav="detail">Contents</button>'+
+      '</div>'+
+      '<div class="grp">'+
+        '<button class="ctrl" data-step="-1" '+(state.chapter===0?'disabled':'')+'>&#8592; Prev</button>'+
+        '<select id="jump">';
+    b.chapters.forEach(function(c,i){
+      html+='<option value="'+i+'" '+(i===state.chapter?'selected':'')+'>'+esc(c.title)+'</option>';
+    });
+    html+='</select>'+
+        '<button class="ctrl" data-step="1" '+(state.chapter===b.chapters.length-1?'disabled':'')+'>Next &#8594;</button>'+
+        '<button class="ctrl" data-fs="-1" aria-label="Smaller text">A&#8722;</button>'+
+        '<button class="ctrl" data-fs="1" aria-label="Larger text">A&#43;</button>'+
+      '</div></div>';
+
+    html+='<div class="rhead"><div class="bk">'+esc(b.title)+' &middot; '+esc(b.author)+'</div>'+
+      '<h2>'+esc(ch.title)+'</h2><div class="orn">&#10022; &#10022; &#10022;</div></div>';
+
+    if(ch.type==='verse'){
+      html+='<div class="verse" style="--rfs:'+state.fs+'px">';
+      var stanza='';
+      ch.lines.forEach(function(ln){
+        if(ln.trim()===''){ if(stanza){html+='<div class="stanza">'+stanza+'</div>';stanza='';} }
+        else stanza+='<div class="ln">'+rich(ln)+'</div>';
+      });
+      if(stanza)html+='<div class="stanza">'+stanza+'</div>';
+      html+='</div>';
+    } else {
+      html+='<div class="prose" style="--rfs:'+state.fs+'px">';
+      ch.paragraphs.forEach(function(p){html+='<p>'+rich(p)+'</p>';});
+      html+='</div>';
+    }
+
+    html+='<div class="rnav">'+
+      '<button class="ctrl" data-step="-1" '+(state.chapter===0?'disabled':'')+'>&#8592; Previous</button>'+
+      '<button class="ctrl" data-step="1" '+(state.chapter===b.chapters.length-1?'disabled':'')+'>Next &#8594;</button>'+
+      '</div></div>';
+    app.innerHTML=html;
+    var sel=document.getElementById('jump');
+    sel.addEventListener('change',function(){state.chapter=+this.value;renderReader();});
+    window.scrollTo(0,0);
+  }
+
+  /* ---------- router ---------- */
+  function render(){
+    if(state.view==='library')renderLibrary();
+    else if(state.view==='detail')renderDetail();
+    else renderReader();
+  }
+
+  app.addEventListener('click',function(e){
+    var t=e.target.closest('[data-book],[data-nav],[data-read],[data-step],[data-fs],[data-f]');
+    if(!t)return;
+    if(t.dataset.f){state.filter=t.dataset.f;renderLibrary();return;}
+    if(t.dataset.book){state.bookId=t.dataset.book;state.view='detail';render();return;}
+    if(t.dataset.nav){state.view=t.dataset.nav;render();return;}
+    if(t.dataset.read!==undefined){state.chapter=+t.dataset.read;state.view='reader';render();return;}
+    if(t.dataset.step){
+      var b=bookById(state.bookId);var n=state.chapter+ +t.dataset.step;
+      if(n>=0&&n<b.chapters.length){state.chapter=n;renderReader();}
+      return;
+    }
+    if(t.dataset.fs){
+      state.fs=Math.max(15,Math.min(30,state.fs+ +t.dataset.fs*2));renderReader();return;
+    }
+  });
+  app.addEventListener('keydown',function(e){
+    var t=e.target.closest('[data-book]');
+    if(t&&(e.key==='Enter'||e.key===' ')){e.preventDefault();state.bookId=t.dataset.book;state.view='detail';render();}
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

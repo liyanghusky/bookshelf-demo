@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Shelf — A Reading Quarterly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Inter:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#f6f2ea;
+    --ivory2:#efe9dd;
+    --ink:#1c1a17;
+    --soft:#5a554c;
+    --hair:#cfc7b6;
+    --accent:#9a4a3c;     /* muted terracotta */
+    --accent-deep:#7c382c;
+    --serif:"Playfair Display","Noto Serif SC","Songti SC",Georgia,serif;
+    --sans:"Inter","Noto Sans SC","Microsoft YaHei",-apple-system,Helvetica,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--ivory);color:var(--ink);font-family:var(--sans);
+    font-weight:400;line-height:1.6;-webkit-font-smoothing:antialiased;font-size:16px;
+  }
+  ::selection{background:var(--accent);color:var(--ivory)}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{color:var(--accent-deep)}
+  button{font-family:inherit;cursor:pointer}
+  .serif{font-family:var(--serif)}
+
+  .kicker{font-family:var(--sans);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .hair{border:none;border-top:1px solid var(--hair)}
+
+  /* ---- masthead ---- */
+  header.mast{border-bottom:1px solid var(--ink);background:var(--ivory);position:sticky;top:0;z-index:40}
+  .mastin{max-width:1180px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:20px}
+  .logo{font-family:var(--serif);font-weight:700;font-size:clamp(22px,3vw,30px);letter-spacing:.01em;cursor:pointer;line-height:1}
+  .logo span{font-style:italic;font-weight:500}
+  .mast .issue{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--soft)}
+  .mast .crumb{margin-left:auto;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px 100px}
+
+  /* ---- library hero ---- */
+  .hero{padding:64px 0 40px;text-align:center;border-bottom:1px solid var(--hair)}
+  .hero .kicker{margin-bottom:20px;display:block}
+  .hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(44px,9vw,104px);line-height:.98;letter-spacing:-.01em;margin:0}
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .hero .dek{max-width:54ch;margin:26px auto 0;font-size:clamp(16px,1.6vw,19px);color:var(--soft);font-weight:300;line-height:1.7}
+  .hero .meta{margin-top:30px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--soft)}
+  .hero .meta b{color:var(--ink);font-weight:600}
+  .hero .dot{display:inline-block;margin:0 12px;color:var(--accent)}
+
+  /* ---- filter bar ---- */
+  .filterbar{display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:center;align-items:center;padding:26px 0;border-bottom:1px solid var(--hair)}
+  .filterbar button{
+    background:none;border:none;font-family:var(--sans);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--soft);font-weight:500;padding:6px 2px;position:relative;
+  }
+  .filterbar button:hover{color:var(--ink)}
+  .filterbar button[aria-pressed="true"]{color:var(--ink)}
+  .filterbar button[aria-pressed="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;background:var(--accent)}
+  .filterbar button .n{font-size:9px;vertical-align:super;color:var(--accent);margin-left:3px}
+
+  /* ---- category sections ---- */
+  .catsec{margin-top:62px}
+  .catsec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:26px}
+  .catsec-head h2{font-family:var(--serif);font-weight:500;font-size:clamp(26px,3.4vw,40px);margin:0;line-height:1}
+  .catsec-head .tl{font-size:12px;color:var(--soft);font-style:italic;font-family:var(--serif)}
+  .catsec-head .ln{flex:1;border-top:1px solid var(--hair);margin-bottom:6px}
+  .catsec-head .ct{font-size:11px;letter-spacing:.2em;color:var(--soft)}
+
+  /* ---- grid + cover ---- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:42px 36px}
+  .card{cursor:pointer;text-align:left;background:none;border:none;padding:0;font-family:inherit;color:inherit;display:flex;flex-direction:column}
+  .cover{
+    aspect-ratio:3/4;background:var(--ivory2);border:1px solid var(--ink);position:relative;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:space-between;padding:22px 20px;transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .card:hover .cover{transform:translateY(-5px);box-shadow:0 18px 34px -22px rgba(28,26,23,.6)}
+  .card:focus-visible .cover{outline:2px solid var(--accent);outline-offset:3px}
+  .cover .c-kick{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .cover .c-mid{flex:1;display:flex;align-items:center}
+  .cover .c-title{font-family:var(--serif);font-weight:600;font-size:clamp(20px,2.4vw,27px);line-height:1.08;letter-spacing:-.005em}
+  .cover .c-rule{width:34px;border-top:1px solid var(--ink);margin:10px 0 8px}
+  .cover .c-author{font-size:11px;letter-spacing:.06em;color:var(--soft);font-style:italic;font-family:var(--serif)}
+  .cover .c-num{position:absolute;top:18px;right:20px;font-family:var(--serif);font-size:13px;color:var(--hair)}
+  /* subtle per-category motif on cover */
+  .cover::after{content:"";position:absolute;right:-30px;bottom:-30px;width:120px;height:120px;border:1px solid var(--hair);border-radius:50%;opacity:.6}
+  .cover.m-mystery::after{border-radius:0;transform:rotate(45deg)}
+  .cover.m-scifi::after{border-radius:50%;border-style:dashed}
+  .cover.m-philosophy::after{width:90px;height:90px;border-width:1px;right:-20px;bottom:-20px}
+  .cover.m-poetry::after{border-left:none;border-bottom:none;transform:rotate(20deg)}
+  .card .c-foot{margin-top:14px;display:flex;justify-content:space-between;align-items:baseline}
+  .card .c-foot .ttl{font-family:var(--serif);font-size:16px;font-weight:500;line-height:1.15}
+  .card .c-foot .aut{font-size:11px;color:var(--soft);letter-spacing:.04em;margin-top:3px}
+  .card .c-foot .chs{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);white-space:nowrap;margin-left:10px}
+
+  /* ---- detail ---- */
+  .detail{padding-top:46px}
+  .det-grid{display:grid;grid-template-columns:300px 1fr;gap:64px;align-items:start}
+  .det-cover .cover{aspect-ratio:3/4}
+  .det-main .kicker{display:block;margin-bottom:16px}
+  .det-main h1{font-family:var(--serif);font-weight:500;font-size:clamp(34px,5.2vw,62px);line-height:1.0;margin:0 0 .25em;letter-spacing:-.01em}
+  .det-main .by{font-size:14px;letter-spacing:.04em;color:var(--soft);font-style:italic;font-family:var(--serif);margin-bottom:26px}
+  .det-main .by b{font-style:normal;font-weight:500;color:var(--ink)}
+  .det-main .blurb{font-family:var(--serif);font-size:clamp(19px,2vw,24px);line-height:1.5;font-weight:400;max-width:40ch;color:#39342d;margin:0 0 30px}
+  .det-facts{display:flex;gap:34px;flex-wrap:wrap;padding:20px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);margin-bottom:30px}
+  .det-facts div{}
+  .det-facts .k{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-bottom:5px}
+  .det-facts .v{font-family:var(--serif);font-size:22px}
+  .startbtn{
+    display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--ivory);
+    padding:15px 30px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;border:1px solid var(--ink);
+    transition:background .25s,color .25s;
+  }
+  .startbtn:hover{background:var(--accent);border-color:var(--accent);color:var(--ivory)}
+  .startbtn .ar{font-family:var(--serif);font-size:16px}
+
+  .contents{margin-top:58px}
+  .contents h3{font-family:var(--serif);font-weight:500;font-size:26px;margin:0 0 4px}
+  .contents .csub{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-bottom:18px}
+  .chrow{display:flex;align-items:baseline;gap:18px;width:100%;text-align:left;background:none;border:none;border-top:1px solid var(--hair);
+        padding:18px 4px;font-family:inherit;color:inherit;transition:padding-left .25s,background .25s}
+  .chrow:last-child{border-bottom:1px solid var(--hair)}
+  .chrow:hover{padding-left:14px;background:linear-gradient(90deg,var(--ivory2),transparent)}
+  .chrow .cn{font-family:var(--serif);font-size:18px;color:var(--accent);min-width:34px}
+  .chrow .ct{flex:1;font-family:var(--serif);font-size:19px;font-weight:500}
+  .chrow .cty{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+  .chrow .car{font-family:var(--serif);color:var(--accent);opacity:0;transition:opacity .25s}
+  .chrow:hover .car{opacity:1}
+  .backlink{display:inline-block;margin-top:46px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
+  .backlink:hover{color:var(--ink)}
+
+  /* ---- reader ---- */
+  .reader{padding-top:24px}
+  .rbar{position:sticky;top:57px;z-index:30;background:var(--ivory);border-bottom:1px solid var(--hair);
+        display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px 0;margin-bottom:34px}
+  .rbar .grp{display:flex;align-items:center;gap:10px}
+  .rbar .lnk{background:none;border:none;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);font-weight:500}
+  .rbar .lnk:hover{color:var(--ink)}
+  .rbar select{
+    font-family:var(--serif);font-size:15px;background:var(--ivory);border:1px solid var(--hair);
+    padding:7px 10px;color:var(--ink);max-width:48vw;border-radius:0;
+  }
+  .rbar .spacer{flex:1}
+  .rbar .fs{display:flex;align-items:center;gap:0;border:1px solid var(--hair)}
+  .rbar .fs button{background:none;border:none;width:38px;height:34px;font-family:var(--serif);font-size:15px;color:var(--soft)}
+  .rbar .fs button:hover{color:var(--ink);background:var(--ivory2)}
+  .rbar .fs .mid{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);padding:0 8px;border-left:1px solid var(--hair);border-right:1px solid var(--hair);height:34px;display:flex;align-items:center}
+
+  .article{max-width:680px;margin:0 auto}
+  .article .a-kick{text-align:center;margin-bottom:14px}
+  .article h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,5vw,52px);line-height:1.04;text-align:center;margin:0 0 10px;letter-spacing:-.01em}
+  .article .a-book{text-align:center;font-style:italic;font-family:var(--serif);color:var(--soft);font-size:15px;margin-bottom:8px}
+  .article .a-orn{text-align:center;color:var(--accent);font-size:18px;letter-spacing:.4em;margin:18px 0 40px}
+  .prose{font-family:var(--serif);font-size:var(--rfs,20px);line-height:1.72;color:#262320}
+  .prose p{margin:0 0 1.3em;text-align:justify;-webkit-hyphens:auto;hyphens:auto}
+  .prose p:first-of-type::first-letter{
+    font-family:var(--serif);float:left;font-size:3.4em;line-height:.78;font-weight:600;
+    padding:.04em .1em 0 0;color:var(--accent);
+  }
+  .verse{font-family:var(--serif);font-size:var(--rfs,20px);line-height:1.8;color:#262320;max-width:46ch;margin:0 auto}
+  .verse .ln{white-space:pre-wrap}
+  .verse .ln.blank{height:1em}
+  /* CJK reading */
+  .cjk .prose,.cjk .verse{line-height:2.05;letter-spacing:.03em;text-align:justify}
+  .cjk .prose p{text-indent:2em}
+  .cjk .prose p:first-of-type::first-letter{float:none;font-size:1em;padding:0;color:inherit}
+  .cjk .article h2,.cjk .article .a-book,.cjk .prose,.cjk .verse{font-family:"Noto Serif SC","Songti SC",serif}
+
+  .rnav{max-width:680px;margin:64px auto 0;display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--hair);padding-top:26px}
+  .rnav button{
+    background:none;border:none;text-align:left;font-family:inherit;color:inherit;flex:1;max-width:46%;
+  }
+  .rnav button.next{text-align:right}
+  .rnav button:disabled{opacity:.25;cursor:not-allowed}
+  .rnav button .d{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+  .rnav button .t{font-family:var(--serif);font-size:17px;color:var(--ink)}
+  .rnav button:not(:disabled):hover .t{color:var(--accent)}
+
+  footer{margin-top:90px;border-top:1px solid var(--ink);padding-top:22px;text-align:center;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--soft)}
+  footer .lg{font-family:var(--serif);font-size:20px;letter-spacing:0;text-transform:none;color:var(--ink);margin-bottom:8px}
+
+  .hidden{display:none !important}
+
+  @media(max-width:760px){
+    .det-grid{grid-template-columns:1fr;gap:34px}
+    .det-cover{max-width:260px}
+    .prose p{text-align:left}
+    .rbar select{max-width:60vw}
+  }
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="mastin">
+    <div class="logo" id="logoHome">The <span>Shelf</span></div>
+    <div class="issue" id="issue">No. —</div>
+    <div class="crumb" id="crumb">The Library</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- LIBRARY -->
+  <section id="view-library">
+    <div class="hero">
+      <span class="kicker">A Reading Quarterly · Public Domain Editions</span>
+      <h1>Quiet hours,<br>great <em>company</em>.</h1>
+      <p class="dek" id="dek"></p>
+      <div class="meta" id="heroMeta"></div>
+    </div>
+    <div class="filterbar" id="filterbar" role="group" aria-label="Filter by category"></div>
+    <div id="catContainer"></div>
+  </section>
+
+  <!-- DETAIL -->
+  <section id="view-detail" class="detail hidden"></section>
+
+  <!-- READER -->
+  <section id="view-reader" class="reader hidden"></section>
+
+  <footer>
+    <div class="lg">The Shelf</div>
+    <div id="footMeta"></div>
+  </footer>
+</main>
+
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  "use strict";
+  var DATA=window.BOOKS||{books:[],categories:[]};
+  var BOOKS=DATA.books||[];
+  var CATS=DATA.categories||[];
+  var catMap={};CATS.forEach(function(c){catMap[c.id]=c;});
+
+  function isCJK(s){return /[㐀-鿿]/.test(s||"");}
+  function $(id){return document.getElementById(id);}
+  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+  function roman(n){var m=["","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX"];return m[n]||n;}
+
+  // stats
+  var totalCh=0,totalWords=0;
+  BOOKS.forEach(function(b){totalCh+=(b.chapters||[]).length;totalWords+=(b.words||0);});
+  $("dek").textContent="A curated reading room of "+BOOKS.length+" enduring works—novels, mysteries, speculative visions, philosophy and verse—set in type for slow, deliberate reading.";
+  $("heroMeta").innerHTML="<b>"+BOOKS.length+"</b> Works <span class='dot'>—</span> <b>"+CATS.length+"</b> Collections <span class='dot'>—</span> <b>"+totalCh+"</b> Chapters";
+  $("issue").textContent="No. "+String(BOOKS.length).padStart(2,"0");
+  $("footMeta").textContent="Source · "+(DATA.source||"Project Gutenberg")+"  ·  Set in Playfair Display & Inter";
+
+  function countIn(id){return BOOKS.filter(function(b){return b.category===id;}).length;}
+
+  var current="all";
+  function renderFilters(){
+    var bar=$("filterbar");bar.innerHTML="";
+    var all=el("button",null,"All Works");
+    all.innerHTML='All Works <span class="n">'+BOOKS.length+'</span>';
+    all.setAttribute("aria-pressed",current==="all"?"true":"false");
+    all.onclick=function(){current="all";renderLibrary();};
+    bar.appendChild(all);
+    CATS.forEach(function(c){
+      var b=el("button",null);
+      b.innerHTML=c.name+' <span class="n">'+countIn(c.id)+'</span>';
+      b.setAttribute("aria-pressed",current===c.id?"true":"false");
+      b.onclick=function(){current=c.id;renderLibrary();};
+      bar.appendChild(b);
+    });
+  }
+
+  function coverNode(b,idx,big){
+    var cv=el("div","cover m-"+b.category);
+    cv.appendChild(el("div","c-kick",(catMap[b.category]?catMap[b.category].name:b.category)));
+    if(idx!=null) cv.appendChild(el("div","c-num",roman(idx+1)));
+    var mid=el("div","c-mid");
+    var t=el("div","c-title",b.title);
+    if(isCJK(b.title))t.style.fontFamily='"Noto Serif SC","Songti SC",serif';
+    mid.appendChild(t);cv.appendChild(mid);
+    var foot=el("div");
+    foot.appendChild(el("div","c-rule"));
+    foot.appendChild(el("div","c-author",b.author));
+    cv.appendChild(foot);
+    return cv;
+  }
+
+  function cardNode(b,idx){
+    var c=el("button","card");c.setAttribute("aria-label",b.title+" by "+b.author);
+    c.appendChild(coverNode(b,idx));
+    var foot=el("div","c-foot");
+    var left=el("div");
+    var tt=el("div","ttl",b.title);if(isCJK(b.title))tt.style.fontFamily='"Noto Serif SC","Songti SC",serif';
+    left.appendChild(tt);
+    left.appendChild(el("div","aut",b.author));
+    foot.appendChild(left);
+    foot.appendChild(el("div","chs",(b.chapters||[]).length+" ch"));
+    c.appendChild(foot);
+    c.onclick=function(){openDetail(b.id);};
+    return c;
+  }
+
+  var catContainer=$("catContainer");
+  function renderLibrary(){
+    renderFilters();
+    catContainer.innerHTML="";
+    var cats=current==="all"?CATS:CATS.filter(function(c){return c.id===current;});
+    cats.forEach(function(c){
+      var list=BOOKS.filter(function(b){return b.category===c.id;});
+      if(!list.length)return;
+      var sec=el("div","catsec");
+      var head=el("div","catsec-head");
+      head.appendChild(el("h2",null,c.name));
+      head.appendChild(el("span","tl",c.tagline||""));
+      head.appendChild(el("span","ln"));
+      head.appendChild(el("span","ct",list.length+" Titles"));
+      sec.appendChild(head);
+      var g=el("div","grid");
+      list.forEach(function(b,i){g.appendChild(cardNode(b,i));});
+      sec.appendChild(g);
+      catContainer.appendChild(sec);
+    });
+    $("crumb").textContent=current==="all"?"The Library":(catMap[current]?catMap[current].name:"The Library");
+  }
+
+  function show(v){["library","detail","reader"].forEach(function(x){$("view-"+x).classList.toggle("hidden",x!==v);});window.scrollTo(0,0);}
+  function bookById(id){for(var i=0;i<BOOKS.length;i++)if(BOOKS[i].id===id)return BOOKS[i];return null;}
+
+  var detailWrap=$("view-detail");
+  function openDetail(id){
+    var b=bookById(id);if(!b)return;
+    detailWrap.innerHTML="";
+    var grid=el("div","det-grid");
+    var cvw=el("div","det-cover");cvw.appendChild(coverNode(b));grid.appendChild(cvw);
+    var main=el("div","det-main");
+    main.appendChild(el("span","kicker",(catMap[b.category]?catMap[b.category].name:b.category)+" · "+(catMap[b.category]?catMap[b.category].tagline:"")));
+    var h1=el("h1",null,b.title);if(isCJK(b.title))h1.style.fontFamily='"Noto Serif SC","Songti SC",serif';
+    main.appendChild(h1);
+    var by=el("div","by");by.innerHTML="by <b>"+b.author+"</b>";main.appendChild(by);
+    main.appendChild(el("p","blurb",b.blurb||""));
+    var facts=el("div","det-facts");
+    function fact(k,v){var d=el("div");d.appendChild(el("div","k",k));d.appendChild(el("div","v",v));return d;}
+    facts.appendChild(fact("Chapters",(b.chapters||[]).length));
+    facts.appendChild(fact("Words",(b.words||0).toLocaleString()));
+    facts.appendChild(fact("Form",(b.chapters||[]).some(function(c){return c.type==="verse";})?"Verse":"Prose"));
+    main.appendChild(facts);
+    var start=el("a","startbtn");start.href="#";start.innerHTML='Start reading <span class="ar">→</span>';
+    start.onclick=function(e){e.preventDefault();openReader(b.id,0);};
+    main.appendChild(start);
+    grid.appendChild(main);
+    detailWrap.appendChild(grid);
+
+    var contents=el("div","contents");
+    contents.appendChild(el("h3",null,"Contents"));
+    contents.appendChild(el("div","csub",(b.chapters||[]).length+" Selections"));
+    (b.chapters||[]).forEach(function(ch,i){
+      var row=el("button","chrow");
+      row.appendChild(el("span","cn",roman(i+1)));
+      var ct=el("span","ct",ch.title);if(isCJK(ch.title))ct.style.fontFamily='"Noto Serif SC","Songti SC",serif';
+      row.appendChild(ct);
+      row.appendChild(el("span","cty",ch.type==="verse"?"Verse":"Prose"));
+      row.appendChild(el("span","car","→"));
+      row.onclick=function(){openReader(b.id,i);};
+      contents.appendChild(row);
+    });
+    detailWrap.appendChild(contents);
+
+    var back=el("a","backlink","← Back to the library");back.href="#";
+    back.onclick=function(e){e.preventDefault();show("library");renderLibrary();};
+    detailWrap.appendChild(back);
+
+    $("crumb").textContent=b.title;
+    show("detail");
+  }
+
+  // reader
+  var fontSizes=[17,19,21,23,26,29];var fsIdx=2;
+  var cur={bookId:null,ch:0};
+  var readerWrap=$("view-reader");
+
+  function openReader(id,ch){cur.bookId=id;cur.ch=ch;renderReader();show("reader");}
+
+  function renderReader(){
+    var b=bookById(cur.bookId);if(!b)return;
+    var chapters=b.chapters||[];var ch=chapters[cur.ch];
+    var cjk=isCJK(b.title)||isCJK(ch.title)||(ch.paragraphs&&ch.paragraphs.some(isCJK));
+    readerWrap.innerHTML="";
+    readerWrap.classList.toggle("cjk",!!cjk);
+
+    var bar=el("div","rbar");
+    var g1=el("div","grp");
+    var toLib=el("button","lnk","← Library");toLib.onclick=function(){show("library");renderLibrary();};
+    var toBook=el("button","lnk","Contents");toBook.onclick=function(){openDetail(b.id);};
+    g1.appendChild(toLib);g1.appendChild(toBook);bar.appendChild(g1);
+
+    var sel=el("select");sel.setAttribute("aria-label","Jump to chapter");
+    chapters.forEach(function(c,i){var o=el("option",null,roman(i+1)+". "+c.title);o.value=i;if(i===cur.ch)o.selected=true;sel.appendChild(o);});
+    sel.onchange=function(){cur.ch=parseInt(sel.value,10);renderReader();};
+    bar.appendChild(sel);
+
+    bar.appendChild(el("div","spacer"));
+    var fs=el("div","fs");
+    var minus=el("button",null,"A");minus.style.fontSize="12px";minus.setAttribute("aria-label","Decrease font size");
+    minus.onclick=function(){if(fsIdx>0){fsIdx--;applyFs();}};
+    var mid=el("div","mid","Size");
+    var plus=el("button",null,"A");plus.style.fontSize="19px";plus.setAttribute("aria-label","Increase font size");
+    plus.onclick=function(){if(fsIdx<fontSizes.length-1){fsIdx++;applyFs();}};
+    fs.appendChild(minus);fs.appendChild(mid);fs.appendChild(plus);
+    bar.appendChild(fs);
+    readerWrap.appendChild(bar);
+
+    var art=el("div","article");
+    art.appendChild(el("div","a-kick kicker",(catMap[b.category]?catMap[b.category].name:b.category)+" · Chapter "+(cur.ch+1)+" of "+chapters.length));
+    var h2=el("h2",null,ch.title);if(cjk)h2.style.fontFamily='"Noto Serif SC","Songti SC",serif';
+    art.appendChild(h2);
+    var ab=el("div","a-book");ab.textContent=b.title+" · "+b.author;if(cjk)ab.style.fontFamily='"Noto Serif SC","Songti SC",serif';
+    art.appendChild(ab);
+    art.appendChild(el("div","a-orn","✦ ✦ ✦"));
+
+    if(ch.type==="verse"){
+      var v=el("div","verse");
+      (ch.lines||[]).forEach(function(line){
+        var ln=el("div","ln");
+        if(line.trim()===""){ln.className="ln blank";}else{ln.textContent=line;}
+        v.appendChild(ln);
+      });
+      art.appendChild(v);
+    }else{
+      var pr=el("div","prose");
+      (ch.paragraphs||[]).forEach(function(p){pr.appendChild(el("p",null,p));});
+      art.appendChild(pr);
+    }
+    readerWrap.appendChild(art);
+
+    var nav=el("div","rnav");
+    var prev=el("button","prev");prev.disabled=cur.ch<=0;
+    prev.innerHTML='<div class="d">← Previous</div><div class="t">'+(cur.ch>0?esc(chapters[cur.ch-1].title):"—")+'</div>';
+    prev.onclick=function(){if(cur.ch>0){cur.ch--;renderReader();}};
+    var next=el("button","next");next.disabled=cur.ch>=chapters.length-1;
+    next.innerHTML='<div class="d">Next →</div><div class="t">'+(cur.ch<chapters.length-1?esc(chapters[cur.ch+1].title):"—")+'</div>';
+    next.onclick=function(){if(cur.ch<chapters.length-1){cur.ch++;renderReader();}};
+    nav.appendChild(prev);nav.appendChild(next);
+    readerWrap.appendChild(nav);
+
+    applyFs();
+    $("crumb").textContent=b.title;
+  }
+  function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+  function applyFs(){readerWrap.style.setProperty("--rfs",fontSizes[fsIdx]+"px");}
+
+  $("logoHome").onclick=function(){show("library");renderLibrary();};
+
+  renderLibrary();
+})();
+</script>
+</body>
+</html>

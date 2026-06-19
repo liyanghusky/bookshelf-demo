@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cozy Reads · a soft little library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fdf6ec;
+    --cream2:#fbeedf;
+    --paper:#fffaf3;
+    --ink:#5d4a47;
+    --ink-soft:#917b76;
+    --pink:#f7c6cf;
+    --pink-d:#e89aa8;
+    --peach:#ffd8b8;
+    --peach-d:#f0ad7e;
+    --sage:#bcd6bd;
+    --sage-d:#86b487;
+    --lav:#d7cdf0;
+    --lav-d:#a994df;
+    --blue:#bcd9ec;
+    --blue-d:#85b8da;
+    --shadow:rgba(120,90,80,.16);
+    --radius:26px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 12% 8%, #ffe9ef 0, transparent 38%),
+      radial-gradient(circle at 88% 4%, #e7f0e0 0, transparent 34%),
+      radial-gradient(circle at 70% 92%, #efe6fb 0, transparent 40%),
+      var(--cream);
+    min-height:100vh;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* subtle dotted paper texture */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(150,120,110,.06) 1px, transparent 1.4px);
+    background-size:22px 22px;
+  }
+  .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:26px 20px 70px}
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit}
+
+  /* ---------- header ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+  .brand{display:flex;align-items:center;gap:12px;cursor:pointer;border:none;background:none;padding:6px 4px}
+  .logo{
+    width:54px;height:54px;border-radius:18px;flex:none;
+    background:linear-gradient(135deg,var(--pink),var(--peach));
+    box-shadow:0 6px 0 var(--pink-d),0 12px 18px var(--shadow);
+    display:grid;place-items:center;font-size:26px;transform:rotate(-6deg);
+    transition:transform .25s ease;
+  }
+  .brand:hover .logo{transform:rotate(4deg) scale(1.05)}
+  .brand h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.7rem;margin:0;letter-spacing:.3px}
+  .brand p{margin:0;font-size:.82rem;color:var(--ink-soft);font-weight:600}
+
+  .doodle-row{font-size:1.1rem;letter-spacing:6px;opacity:.65;user-select:none}
+
+  /* ---------- filter chips ---------- */
+  .filters{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 30px}
+  .chip{
+    border:2.5px dashed transparent;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Quicksand',sans-serif;font-weight:700;font-size:.92rem;
+    padding:9px 16px;border-radius:999px;
+    box-shadow:0 4px 0 rgba(180,150,140,.18);
+    transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s, background .2s, border-color .2s;
+  }
+  .chip:hover{transform:translateY(-3px) rotate(-1.5deg)}
+  .chip[data-on="1"]{color:#fff;border-color:rgba(255,255,255,.6)}
+  .chip.c-all[data-on="1"]{background:linear-gradient(135deg,var(--pink-d),var(--peach-d))}
+  .chip.c-fiction[data-on="1"]{background:var(--pink-d)}
+  .chip.c-mystery[data-on="1"]{background:var(--lav-d)}
+  .chip.c-scifi[data-on="1"]{background:var(--blue-d)}
+  .chip.c-philosophy[data-on="1"]{background:var(--sage-d)}
+  .chip.c-poetry[data-on="1"]{background:var(--peach-d)}
+
+  /* ---------- shelf / cards ---------- */
+  .shelf-section{margin-bottom:38px}
+  .shelf-head{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}
+  .shelf-head h2{font-family:'Baloo 2';font-size:1.35rem;margin:0}
+  .shelf-head .tag{font-size:.82rem;color:var(--ink-soft);font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:26px 22px}
+
+  .card{
+    position:relative;background:none;border:none;padding:0;text-align:left;
+    transition:transform .22s cubic-bezier(.34,1.56,.64,1);
+  }
+  .card:hover{transform:translateY(-6px) rotate(-1deg)}
+  .card .tape{
+    position:absolute;top:-12px;left:50%;width:74px;height:24px;
+    transform:translateX(-50%) rotate(-4deg);
+    background:rgba(255,255,255,.55);
+    box-shadow:0 2px 5px rgba(120,90,80,.12);
+    border-radius:3px;z-index:3;
+  }
+  .card .tape::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,rgba(255,255,255,.35) 6px 7px)}
+  .cover{
+    aspect-ratio:3/4;border-radius:18px;position:relative;overflow:hidden;
+    box-shadow:0 8px 0 var(--cover-sh,var(--pink-d)),0 14px 22px var(--shadow);
+    display:flex;flex-direction:column;justify-content:space-between;padding:16px 15px;
+    color:#fff;
+  }
+  .cat-fiction .cover{background:linear-gradient(150deg,#ffd0da,#f7aebb 70%);--cover-sh:#e89aa8}
+  .cat-mystery .cover{background:linear-gradient(150deg,#ded2f6,#c0aaec 70%);--cover-sh:#a994df}
+  .cat-scifi .cover{background:linear-gradient(150deg,#cfe7f5,#a4cfe8 70%);--cover-sh:#85b8da}
+  .cat-philosophy .cover{background:linear-gradient(150deg,#cfe6cf,#a6cda6 70%);--cover-sh:#86b487}
+  .cat-poetry .cover{background:linear-gradient(150deg,#ffe2c2,#f8c293 70%);--cover-sh:#f0ad7e}
+  .cover .deco{position:absolute;inset:0;opacity:.5;mix-blend-mode:soft-light}
+  .cover .deco svg{width:100%;height:100%}
+  .cover .ctitle{font-family:'Baloo 2';font-weight:800;font-size:1.18rem;line-height:1.12;text-shadow:0 1px 1px rgba(120,80,70,.25);position:relative;z-index:2}
+  .cover .cauthor{font-family:'Quicksand';font-weight:700;font-size:.78rem;opacity:.95;position:relative;z-index:2}
+  .cover .sticker{
+    position:absolute;bottom:-10px;right:-10px;width:54px;height:54px;border-radius:50%;
+    background:#fffaf3;display:grid;place-items:center;font-size:24px;
+    box-shadow:0 3px 8px rgba(120,90,80,.2);transform:rotate(8deg);z-index:3;
+  }
+  .card .meta{padding:12px 6px 0;text-align:center}
+  .card .meta .t{font-family:'Baloo 2';font-weight:700;font-size:1rem;line-height:1.15;color:var(--ink)}
+  .card .meta .a{font-size:.82rem;color:var(--ink-soft);font-weight:600}
+
+  /* ---------- detail ---------- */
+  .backbtn{
+    display:inline-flex;align-items:center;gap:8px;border:none;
+    background:var(--paper);color:var(--ink);font-family:'Quicksand';font-weight:700;
+    padding:9px 16px;border-radius:999px;box-shadow:0 4px 0 rgba(180,150,140,.18);
+    margin-bottom:22px;transition:transform .18s;
+  }
+  .backbtn:hover{transform:translateX(-3px)}
+  .detail{display:grid;grid-template-columns:260px 1fr;gap:38px;align-items:start}
+  .detail .coverwrap{position:relative}
+  .detail .cover{aspect-ratio:3/4}
+  .detail .info h2{font-family:'Baloo 2';font-weight:800;font-size:2.1rem;margin:.1em 0 .1em;line-height:1.08}
+  .detail .info .by{font-size:1.05rem;color:var(--ink-soft);font-weight:700;margin-bottom:14px}
+  .pill{display:inline-block;font-family:'Quicksand';font-weight:700;font-size:.78rem;padding:5px 13px;border-radius:999px;color:#fff;margin-bottom:18px}
+  .blurb{background:var(--paper);border-radius:var(--radius);padding:18px 20px;box-shadow:0 6px 0 rgba(180,150,140,.14);font-size:1.03rem;position:relative}
+  .blurb::before{content:"❝";position:absolute;top:-10px;left:14px;font-size:1.6rem;color:var(--pink-d);opacity:.6}
+  .start{
+    margin:22px 0 26px;border:none;color:#fff;font-family:'Baloo 2';font-weight:700;font-size:1.05rem;
+    padding:13px 26px;border-radius:18px;
+    background:linear-gradient(135deg,var(--pink-d),var(--peach-d));
+    box-shadow:0 6px 0 #d98f7a,0 12px 18px var(--shadow);
+    transition:transform .16s;
+  }
+  .start:hover{transform:translateY(-3px)}
+  .start:active{transform:translateY(2px)}
+  .chlist h3{font-family:'Baloo 2';font-size:1.1rem;margin:6px 0 12px}
+  .chitem{
+    display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:none;
+    background:var(--paper);border-radius:18px;padding:12px 16px;margin-bottom:10px;
+    box-shadow:0 4px 0 rgba(180,150,140,.14);transition:transform .16s, background .2s;
+    color:var(--ink);font-family:'Nunito';font-size:1rem;font-weight:600;
+  }
+  .chitem:hover{transform:translateX(4px);background:#fff}
+  .chitem .num{
+    width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;
+    font-family:'Baloo 2';font-weight:700;color:#fff;font-size:.95rem;
+    background:linear-gradient(135deg,var(--lav-d),var(--blue-d));
+  }
+  .chitem .badge{margin-left:auto;font-size:.72rem;font-weight:700;color:var(--ink-soft);
+    background:var(--cream2);padding:3px 10px;border-radius:999px}
+
+  /* ---------- reader ---------- */
+  .reader-top{
+    position:sticky;top:0;z-index:5;backdrop-filter:blur(6px);
+    background:rgba(253,246,236,.85);
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:12px 4px;margin:-26px -8px 18px;border-bottom:2px dashed rgba(180,150,140,.3);
+  }
+  .rt-btn{
+    border:none;background:var(--paper);color:var(--ink);font-family:'Quicksand';font-weight:700;
+    padding:8px 14px;border-radius:14px;box-shadow:0 3px 0 rgba(180,150,140,.18);
+    transition:transform .15s;font-size:.9rem;display:inline-flex;align-items:center;gap:6px;
+  }
+  .rt-btn:hover{transform:translateY(-2px)}
+  .rt-btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+  .rt-sel{
+    font-family:'Quicksand';font-weight:700;color:var(--ink);background:var(--paper);
+    border:none;padding:8px 12px;border-radius:14px;box-shadow:0 3px 0 rgba(180,150,140,.18);
+    max-width:46vw;font-size:.9rem;cursor:pointer;
+  }
+  .fontctl{display:inline-flex;align-items:center;gap:6px;margin-left:auto}
+  .fontctl .rt-btn{width:38px;justify-content:center;font-weight:800}
+  .read-shell{max-width:680px;margin:0 auto;padding:10px 6px 40px}
+  .read-shell .kicker{font-family:'Quicksand';font-weight:700;color:var(--pink-d);font-size:.85rem;letter-spacing:1px;text-transform:uppercase}
+  .read-shell h2{font-family:'Baloo 2';font-weight:800;font-size:1.9rem;margin:.2em 0 .1em;line-height:1.12}
+  .read-shell .bookof{color:var(--ink-soft);font-weight:600;margin-bottom:22px}
+  .read-body{font-size:var(--fs,1.12rem);line-height:1.85}
+  .read-body p{margin:0 0 1.25em}
+  .read-body p:first-of-type::first-letter{
+    font-family:'Baloo 2';font-weight:800;font-size:3.1em;line-height:.78;float:left;
+    margin:.05em .12em 0 0;color:var(--pink-d);
+  }
+  .verse{font-style:normal}
+  .verse .stanza{margin:0 0 1.3em}
+  .verse .vline{display:block;white-space:pre-wrap}
+  .read-end{text-align:center;margin:38px 0 10px;color:var(--ink-soft);font-weight:700}
+  .read-end .hr{font-size:1.4rem;letter-spacing:8px;opacity:.5;margin-bottom:10px}
+  .read-nav{display:flex;justify-content:space-between;gap:12px;margin-top:14px}
+  .read-nav .rt-btn{flex:1;justify-content:center;padding:12px}
+
+  .view{animation:pop .35s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .hidden{display:none}
+  :focus-visible{outline:3px solid var(--lav-d);outline-offset:2px;border-radius:6px}
+
+  @media(max-width:640px){
+    .detail{grid-template-columns:1fr;gap:24px}
+    .detail .coverwrap{max-width:230px;margin:0 auto}
+    .brand h1{font-size:1.4rem}
+    .read-shell h2{font-size:1.55rem}
+    .rt-sel{max-width:40vw}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <button class="brand" id="brandBtn" aria-label="Home">
+      <span class="logo">📖</span>
+      <span>
+        <h1>Cozy Reads</h1>
+        <p>a soft little library ⋆˚✿</p>
+      </span>
+    </button>
+    <div class="doodle-row" aria-hidden="true">✿ ⋆ ❀ ✦ ☁︎</div>
+  </header>
+
+  <!-- LIBRARY -->
+  <section id="view-library" class="view">
+    <div class="filters" id="filters"></div>
+    <div id="shelves"></div>
+  </section>
+
+  <!-- DETAIL -->
+  <section id="view-detail" class="view hidden"></section>
+
+  <!-- READER -->
+  <section id="view-reader" class="view hidden"></section>
+</div>
+
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  var DATA = window.BOOKS;
+  var cats = DATA.categories;
+  var books = DATA.books;
+  var catName = {}, catIdx = {};
+  cats.forEach(function(c,i){catName[c.id]=c.name;catIdx[c.id]=i;});
+
+  var stickers = {fiction:"🌷",mystery:"🔮",scifi:"🚀",philosophy:"🌿",poetry:"🕊️"};
+  var catColor = {fiction:"#e89aa8",mystery:"#a994df",scifi:"#85b8da",philosophy:"#86b487",poetry:"#f0ad7e"};
+
+  var els = {
+    library: document.getElementById('view-library'),
+    detail: document.getElementById('view-detail'),
+    reader: document.getElementById('view-reader'),
+    filters: document.getElementById('filters'),
+    shelves: document.getElementById('shelves')
+  };
+
+  var state = {filter:'all', book:null, chapter:0, fs:1.12};
+
+  function show(view){
+    ['library','detail','reader'].forEach(function(v){
+      els[v].classList.toggle('hidden', v!==view);
+    });
+    if(view!=='reader') window.scrollTo({top:0,behavior:'instant'});
+  }
+
+  function coverDeco(){
+    return '<div class="deco"><svg viewBox="0 0 100 140" preserveAspectRatio="none">'+
+      '<circle cx="20" cy="30" r="14" fill="#fff"/>'+
+      '<circle cx="80" cy="110" r="22" fill="#fff"/>'+
+      '<path d="M0 90 Q25 70 50 90 T100 90" stroke="#fff" stroke-width="3" fill="none"/>'+
+      '</svg></div>';
+  }
+
+  function coverHTML(b, withSticker){
+    return '<div class="cover">'+coverDeco()+
+      '<div class="ctitle">'+esc(b.title)+'</div>'+
+      '<div class="cauthor">'+esc(b.author)+'</div>'+
+      (withSticker?'<div class="sticker">'+(stickers[b.category]||'✦')+'</div>':'')+
+    '</div>';
+  }
+
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  /* ---- library ---- */
+  function renderFilters(){
+    var html = '<button class="chip c-all" data-cat="all" data-on="1">All books ✦</button>';
+    cats.forEach(function(c){
+      html += '<button class="chip c-'+c.id+'" data-cat="'+c.id+'" data-on="0">'+esc(c.name)+'</button>';
+    });
+    els.filters.innerHTML = html;
+    Array.prototype.forEach.call(els.filters.querySelectorAll('.chip'), function(ch){
+      ch.addEventListener('click', function(){
+        state.filter = ch.getAttribute('data-cat');
+        Array.prototype.forEach.call(els.filters.querySelectorAll('.chip'), function(o){
+          o.setAttribute('data-on', o.getAttribute('data-cat')===state.filter?'1':'0');
+        });
+        renderShelves();
+      });
+    });
+  }
+
+  function bookCard(b){
+    return '<button class="card cat-'+b.category+'" data-id="'+b.id+'">'+
+      '<span class="tape"></span>'+
+      coverHTML(b,true)+
+      '<span class="meta"><span class="t">'+esc(b.title)+'</span><br><span class="a">'+esc(b.author)+'</span></span>'+
+    '</button>';
+  }
+
+  function renderShelves(){
+    var html='';
+    var groups = state.filter==='all' ? cats.map(function(c){return c.id;}) : [state.filter];
+    groups.forEach(function(cid){
+      var c = cats[catIdx[cid]];
+      var list = books.filter(function(b){return b.category===cid;});
+      if(!list.length) return;
+      html += '<section class="shelf-section"><div class="shelf-head">'+
+        '<h2>'+(stickers[cid]||'')+' '+esc(c.name)+'</h2>'+
+        '<span class="tag">'+esc(c.tagline)+'</span></div>'+
+        '<div class="grid">'+ list.map(bookCard).join('') +'</div></section>';
+    });
+    els.shelves.innerHTML = html;
+    Array.prototype.forEach.call(els.shelves.querySelectorAll('.card'), function(card){
+      card.addEventListener('click', function(){ openDetail(card.getAttribute('data-id')); });
+    });
+  }
+
+  /* ---- detail ---- */
+  function openDetail(id){
+    var b = books.find(function(x){return x.id===id;});
+    state.book = b;
+    var color = catColor[b.category];
+    var ch = b.chapters.map(function(c,i){
+      var kind = c.type==='verse'?'verse':'prose';
+      var units = c.type==='verse'? (c.lines?c.lines.length:0)+' lines' : (c.paragraphs?c.paragraphs.length:0)+' paragraphs';
+      return '<button class="chitem" data-ci="'+i+'">'+
+        '<span class="num">'+(i+1)+'</span>'+
+        '<span>'+esc(c.title)+'</span>'+
+        '<span class="badge">'+units+'</span></button>';
+    }).join('');
+
+    els.detail.innerHTML =
+      '<button class="backbtn" id="d-back">← back to library</button>'+
+      '<div class="detail cat-'+b.category+'">'+
+        '<div class="coverwrap">'+coverHTML(b,true)+'</div>'+
+        '<div class="info">'+
+          '<span class="pill" style="background:'+color+'">'+(stickers[b.category]||'')+' '+esc(catName[b.category])+'</span>'+
+          '<h2>'+esc(b.title)+'</h2>'+
+          '<div class="by">by '+esc(b.author)+'</div>'+
+          '<div class="blurb">'+esc(b.blurb)+'</div>'+
+          '<button class="start" id="d-start">Start reading ✿</button>'+
+          '<div class="chlist"><h3>Chapters &amp; verses 🧁</h3>'+ch+'</div>'+
+        '</div>'+
+      '</div>';
+    document.getElementById('d-back').addEventListener('click', function(){show('library');});
+    document.getElementById('d-start').addEventListener('click', function(){openReader(b,0);});
+    Array.prototype.forEach.call(els.detail.querySelectorAll('.chitem'), function(it){
+      it.addEventListener('click', function(){ openReader(b, parseInt(it.getAttribute('data-ci'),10)); });
+    });
+    show('detail');
+  }
+
+  /* ---- reader ---- */
+  function chapterBody(c){
+    if(c.type==='verse'){
+      var lines = c.lines||[];
+      var out='<div class="verse">', stanza='';
+      function flush(){ if(stanza){ out+='<div class="stanza">'+stanza+'</div>'; stanza=''; } }
+      lines.forEach(function(ln){
+        if(ln.trim()===''){ flush(); }
+        else { stanza += '<span class="vline">'+esc(ln)+'</span>'; }
+      });
+      flush();
+      out+='</div>';
+      return out;
+    }
+    return (c.paragraphs||[]).map(function(p){return '<p>'+esc(p)+'</p>';}).join('');
+  }
+
+  function openReader(b, ci){
+    state.book = b; state.chapter = ci;
+    renderReader();
+    show('reader');
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+
+  function renderReader(){
+    var b = state.book, ci = state.chapter, c = b.chapters[ci];
+    var opts = b.chapters.map(function(ch,i){
+      return '<option value="'+i+'"'+(i===ci?' selected':'')+'>'+esc((i+1)+'. '+ch.title)+'</option>';
+    }).join('');
+
+    els.reader.innerHTML =
+      '<div class="reader-top">'+
+        '<button class="rt-btn" id="r-book">📚 book</button>'+
+        '<button class="rt-btn" id="r-home">🏠 library</button>'+
+        '<button class="rt-btn" id="r-prev" '+(ci===0?'disabled':'')+'>← prev</button>'+
+        '<select class="rt-sel" id="r-jump" aria-label="Jump to chapter">'+opts+'</select>'+
+        '<button class="rt-btn" id="r-next" '+(ci===b.chapters.length-1?'disabled':'')+'>next →</button>'+
+        '<span class="fontctl"><button class="rt-btn" id="r-minus" aria-label="Smaller text">A−</button>'+
+        '<button class="rt-btn" id="r-plus" aria-label="Larger text">A+</button></span>'+
+      '</div>'+
+      '<article class="read-shell" style="--fs:'+state.fs+'rem">'+
+        '<div class="kicker">'+(stickers[b.category]||'')+' '+esc(catName[b.category])+'</div>'+
+        '<h2>'+esc(c.title)+'</h2>'+
+        '<div class="bookof">from <b>'+esc(b.title)+'</b> · '+esc(b.author)+'</div>'+
+        '<div class="read-body">'+chapterBody(c)+'</div>'+
+        '<div class="read-end"><div class="hr">✿ ⋆ ✿</div>'+
+          (ci<b.chapters.length-1?'on to the next chapter →':'the end of this book ☁︎')+'</div>'+
+        '<div class="read-nav">'+
+          '<button class="rt-btn" id="r-prev2" '+(ci===0?'disabled':'')+'>← previous</button>'+
+          '<button class="rt-btn" id="r-next2" '+(ci===b.chapters.length-1?'disabled':'')+'>next chapter →</button>'+
+        '</div>'+
+      '</article>';
+
+    function go(delta){ var n=ci+delta; if(n>=0&&n<b.chapters.length){state.chapter=n;renderReader();window.scrollTo({top:0,behavior:'smooth'});} }
+    document.getElementById('r-book').addEventListener('click', function(){openDetail(b.id);});
+    document.getElementById('r-home').addEventListener('click', function(){show('library');});
+    document.getElementById('r-prev').addEventListener('click', function(){go(-1);});
+    document.getElementById('r-next').addEventListener('click', function(){go(1);});
+    document.getElementById('r-prev2').addEventListener('click', function(){go(-1);});
+    document.getElementById('r-next2').addEventListener('click', function(){go(1);});
+    document.getElementById('r-jump').addEventListener('change', function(e){state.chapter=parseInt(e.target.value,10);renderReader();window.scrollTo({top:0,behavior:'smooth'});});
+    document.getElementById('r-minus').addEventListener('click', function(){state.fs=Math.max(0.85,state.fs-0.1);renderReader();});
+    document.getElementById('r-plus').addEventListener('click', function(){state.fs=Math.min(1.7,state.fs+0.1);renderReader();});
+  }
+
+  document.getElementById('brandBtn').addEventListener('click', function(){show('library');});
+
+  renderFilters();
+  renderShelves();
+  show('library');
+})();
+</script>
+</body>
+</html>

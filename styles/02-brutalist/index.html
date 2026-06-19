@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE BOOKSHELF // BRUTAL READER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --paper:#e9e7df;        /* off-white concrete */
+    --paper2:#dedcd2;
+    --line:#0a0a0a;
+    --hi:#ffe600;           /* loud highlighter yellow */
+    --blue:#0000ee;         /* default-browser link blue */
+    --vis:#7a0bff;          /* visited */
+    --bw:3px;
+    --mono:"Space Mono","Noto Sans SC","Microsoft YaHei",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--mono);
+    font-size:16px;
+    line-height:1.4;
+    -webkit-font-smoothing:none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 38px, rgba(0,0,0,.045) 38px 39px);
+  }
+  a{color:var(--blue);text-decoration:underline;text-underline-offset:2px}
+  a:visited{color:var(--vis)}
+  button{font-family:var(--mono);cursor:pointer}
+  ::selection{background:var(--hi);color:#000}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 16px 80px}
+
+  /* ---- top bar ---- */
+  header.top{
+    border-bottom:var(--bw) solid var(--line);
+    background:var(--paper);
+    position:sticky;top:0;z-index:40;
+  }
+  .topin{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .brand{
+    font-weight:700;font-size:clamp(20px,3.6vw,30px);letter-spacing:-.02em;
+    text-transform:uppercase;cursor:pointer;display:inline-flex;gap:8px;align-items:center;
+  }
+  .brand .blk{background:var(--ink);color:var(--paper);padding:0 8px}
+  .meta-tag{font-size:11px;border:2px solid var(--line);padding:2px 6px;text-transform:uppercase;letter-spacing:.05em}
+  .crumb{margin-left:auto;font-size:12px;text-transform:uppercase}
+
+  /* ---- generic blocks ---- */
+  .label{
+    display:inline-block;background:var(--ink);color:var(--paper);
+    font-size:11px;text-transform:uppercase;letter-spacing:.12em;padding:3px 8px;font-weight:700;
+  }
+  .rule{border:none;border-top:var(--bw) solid var(--line);margin:0}
+
+  /* ---- hero / library ---- */
+  .hero{border:var(--bw) solid var(--line);border-top:none;padding:18px 16px;background:var(--paper2)}
+  .hero h1{margin:0;font-size:clamp(34px,9vw,86px);line-height:.92;text-transform:uppercase;letter-spacing:-.03em;font-weight:700}
+  .hero p{margin:12px 0 0;max-width:62ch}
+  .stats{display:flex;flex-wrap:wrap;gap:0;margin-top:16px;border:2px solid var(--line)}
+  .stat{flex:1 1 130px;border-right:2px solid var(--line);padding:8px 10px}
+  .stat:last-child{border-right:none}
+  .stat b{display:block;font-size:28px}
+  .stat span{font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+
+  /* ---- filters ---- */
+  .filters{display:flex;flex-wrap:wrap;gap:0;margin:0 0 0 0;border:var(--bw) solid var(--line);border-top:none}
+  .filters button{
+    flex:1 1 auto;background:var(--paper);border:none;border-right:2px solid var(--line);
+    padding:12px 14px;text-transform:uppercase;font-size:13px;font-weight:700;letter-spacing:.04em;
+    color:var(--ink);
+  }
+  .filters button:last-child{border-right:none}
+  .filters button:hover{background:var(--hi)}
+  .filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+  .filters button .n{font-weight:400;opacity:.7;margin-left:6px}
+
+  /* ---- grid ---- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:-2px;margin-top:24px;
+        border-top:var(--bw) solid var(--line);border-left:var(--bw) solid var(--line)}
+  .card{
+    border-right:var(--bw) solid var(--line);border-bottom:var(--bw) solid var(--line);
+    background:var(--paper);padding:0;cursor:pointer;display:flex;flex-direction:column;
+    text-align:left;color:inherit;font-family:inherit;
+  }
+  .card:hover{background:var(--hi)}
+  .card:focus-visible{outline:4px solid var(--blue);outline-offset:-4px}
+  .cover{
+    aspect-ratio:3/4;border-bottom:var(--bw) solid var(--line);padding:14px;display:flex;flex-direction:column;
+    justify-content:space-between;position:relative;overflow:hidden;
+  }
+  .cover .ct{font-weight:700;font-size:clamp(17px,2.2vw,22px);line-height:1.05;text-transform:uppercase;letter-spacing:-.01em;z-index:2}
+  .cover .ca{font-size:12px;text-transform:uppercase;letter-spacing:.05em;z-index:2}
+  .cover .cat-strip{position:absolute;top:0;left:0;right:0;height:22px;border-bottom:2px solid var(--line);
+        display:flex;align-items:center;padding:0 6px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .cover .ct{margin-top:26px}
+  /* category pattern fills */
+  .pat{position:absolute;inset:22px 0 0 0;z-index:1;opacity:.9}
+  .pat-fiction{background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(0,0,0,.10) 14px 16px)}
+  .pat-mystery{background:repeating-linear-gradient(0deg,transparent 0 9px,rgba(0,0,0,.13) 9px 11px)}
+  .pat-scifi{background:radial-gradient(circle at 20% 80%,rgba(0,0,0,.16) 2px,transparent 3px) 0 0/18px 18px}
+  .pat-philosophy{background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(0,0,0,.10) 22px 24px)}
+  .pat-poetry{background:repeating-linear-gradient(-45deg,transparent 0 6px,rgba(0,0,0,.10) 6px 8px)}
+  .card .cardbtm{padding:8px 10px;display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .card .cardbtm .read{color:var(--blue);text-decoration:underline}
+
+  /* ---- section heads per category (grouped view) ---- */
+  .catblock{margin-top:34px}
+  .cathead{display:flex;align-items:baseline;gap:12px;border-bottom:var(--bw) solid var(--line);padding-bottom:6px}
+  .cathead h2{margin:0;font-size:clamp(22px,4vw,38px);text-transform:uppercase;letter-spacing:-.02em}
+  .cathead .tl{font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-left:auto}
+
+  /* ---- detail ---- */
+  .detail{margin-top:26px}
+  .det-top{display:grid;grid-template-columns:300px 1fr;gap:0;border:var(--bw) solid var(--line)}
+  .det-cover{border-right:var(--bw) solid var(--line)}
+  .det-cover .cover{aspect-ratio:3/4;border-bottom:none}
+  .det-info{padding:20px}
+  .det-info h1{margin:.1em 0 .15em;font-size:clamp(28px,5vw,46px);line-height:.98;text-transform:uppercase;letter-spacing:-.02em}
+  .det-info .byline{font-size:15px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px}
+  .det-info .blurb{font-size:16px;max-width:62ch;border-left:6px solid var(--ink);padding-left:14px;margin:16px 0}
+  .det-info .facts{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+  .det-info .facts span{border:2px solid var(--line);padding:3px 8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  .bigbtn{
+    display:inline-block;background:var(--ink);color:var(--paper);border:var(--bw) solid var(--line);
+    padding:14px 22px;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+    text-decoration:none;margin-top:6px;
+  }
+  .bigbtn:hover{background:var(--hi);color:var(--ink)}
+  .bigbtn:visited{color:var(--paper)}
+  .bigbtn:hover:visited{color:var(--ink)}
+
+  .chlist{margin-top:24px;border-top:var(--bw) solid var(--line)}
+  .chlist .chrow{
+    display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--paper);
+    border:none;border-bottom:2px solid var(--line);padding:14px 12px;font-family:inherit;color:inherit;font-size:15px;
+  }
+  .chlist .chrow:hover{background:var(--hi)}
+  .chlist .chrow .num{font-weight:700;min-width:42px}
+  .chlist .chrow .nm{flex:1;text-transform:uppercase;letter-spacing:.01em}
+  .chlist .chrow .ty{font-size:11px;border:2px solid var(--line);padding:1px 6px;text-transform:uppercase}
+  .chlist .chrow .go{color:var(--blue);text-decoration:underline;font-size:12px;text-transform:uppercase}
+
+  /* ---- reader ---- */
+  .reader{margin-top:22px}
+  .rctrl{
+    display:flex;flex-wrap:wrap;gap:0;align-items:stretch;border:var(--bw) solid var(--line);position:sticky;top:54px;z-index:30;background:var(--paper)
+  }
+  .rctrl > *{border-right:2px solid var(--line)}
+  .rctrl > *:last-child{border-right:none}
+  .rctrl button, .rctrl select{
+    background:var(--paper);border:none;padding:10px 12px;font-size:13px;text-transform:uppercase;font-weight:700;
+    letter-spacing:.04em;color:var(--ink);font-family:inherit;
+  }
+  .rctrl button:hover{background:var(--hi)}
+  .rctrl select{max-width:46vw}
+  .rctrl .grow{flex:1}
+  .rctrl .pos{display:flex;align-items:center;padding:0 12px;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  .rctrl .fs{display:flex}
+  .reader-body{
+    border:var(--bw) solid var(--line);border-top:none;background:var(--paper);
+    padding:clamp(20px,5vw,56px) clamp(16px,5vw,64px);
+  }
+  .rhead{margin-bottom:22px;border-bottom:2px solid var(--line);padding-bottom:12px}
+  .rhead .bk{font-size:12px;text-transform:uppercase;letter-spacing:.1em}
+  .rhead h2{margin:.15em 0 0;font-size:clamp(26px,5vw,44px);text-transform:uppercase;letter-spacing:-.02em;line-height:1}
+  .prose{max-width:68ch;margin:0 auto;font-size:var(--rfs,18px);line-height:1.62}
+  .prose p{margin:0 0 1.15em}
+  .prose p:first-child::first-letter{
+    font-weight:700;font-size:1em;
+  }
+  .verse{max-width:62ch;margin:0 auto;font-size:var(--rfs,18px);line-height:1.7}
+  .verse .ln{white-space:pre-wrap}
+  .verse .ln.blank{height:.9em}
+  .cjk .prose, .cjk .verse{line-height:1.9;letter-spacing:.02em}
+  .cjk .prose p{text-indent:2em;margin-bottom:.9em}
+  .readnav{display:flex;gap:0;margin-top:6px;border:var(--bw) solid var(--line);border-top:none}
+  .readnav button{flex:1;background:var(--paper);border:none;border-right:2px solid var(--line);
+        padding:16px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink);font-family:inherit}
+  .readnav button:last-child{border-right:none}
+  .readnav button:hover:not(:disabled){background:var(--hi)}
+  .readnav button:disabled{color:#999;cursor:not-allowed;background:var(--paper2)}
+
+  footer{margin-top:60px;border-top:var(--bw) solid var(--line);padding-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+
+  .hidden{display:none !important}
+
+  @media(max-width:720px){
+    .det-top{grid-template-columns:1fr}
+    .det-cover{border-right:none;border-bottom:var(--bw) solid var(--line)}
+    .det-cover .cover{aspect-ratio:16/10}
+    .filters{flex-direction:column}
+    .filters button{border-right:none;border-bottom:2px solid var(--line)}
+    .rctrl select{max-width:60vw}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="topin">
+    <div class="brand" id="brandHome" tabindex="0" role="button" aria-label="Back to library">
+      <span class="blk">THE</span><span>BOOKSHELF</span>
+    </div>
+    <span class="meta-tag">RAW READER v1</span>
+    <span class="crumb" id="crumb">// LIBRARY</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ LIBRARY ============ -->
+  <section id="view-library">
+    <div class="hero">
+      <h1>READ THE<br>PUBLIC DOMAIN.</h1>
+      <p>No frills. No fonts you didn't ask for. Just <span id="bookCount"></span> books pulled from <span id="srcName"></span>, sorted into <span id="catCount"></span> blunt categories. Click a box. Read the thing.</p>
+      <div class="stats">
+        <div class="stat"><b id="sBooks">0</b><span>Books</span></div>
+        <div class="stat"><b id="sCats">0</b><span>Categories</span></div>
+        <div class="stat"><b id="sChs">0</b><span>Chapters</span></div>
+        <div class="stat"><b id="sWords">0</b><span>Words (k)</span></div>
+      </div>
+    </div>
+
+    <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+
+    <div id="catContainer"></div>
+  </section>
+
+  <!-- ============ DETAIL ============ -->
+  <section id="view-detail" class="detail hidden"></section>
+
+  <!-- ============ READER ============ -->
+  <section id="view-reader" class="reader hidden"></section>
+
+  <footer>
+    <hr class="rule" style="margin-bottom:12px">
+    SOURCE: <span id="footSrc"></span> &nbsp;//&nbsp; ALL TEXT PUBLIC DOMAIN &nbsp;//&nbsp; BUILT UGLY ON PURPOSE
+  </footer>
+</main>
+
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  "use strict";
+  var DATA = window.BOOKS || {books:[],categories:[]};
+  var BOOKS = DATA.books || [];
+  var CATS = DATA.categories || [];
+  var catMap = {}; CATS.forEach(function(c){catMap[c.id]=c;});
+
+  function isCJK(s){return /[㐀-鿿]/.test(s||"");}
+  function $(id){return document.getElementById(id);}
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+
+  // ---- stats ----
+  var totalCh=0,totalWords=0;
+  BOOKS.forEach(function(b){totalCh+=(b.chapters||[]).length;totalWords+=(b.words||0);});
+  $("bookCount").textContent=BOOKS.length;
+  $("catCount").textContent=CATS.length;
+  $("srcName").textContent=DATA.source||"Project Gutenberg";
+  $("footSrc").textContent=DATA.source||"Project Gutenberg";
+  $("sBooks").textContent=BOOKS.length;
+  $("sCats").textContent=CATS.length;
+  $("sChs").textContent=totalCh;
+  $("sWords").textContent=Math.round(totalWords/1000);
+
+  // ---- filters ----
+  var current="all";
+  var filterWrap=$("filters");
+  function countIn(cid){return BOOKS.filter(function(b){return b.category===cid;}).length;}
+  function makeFilterBtn(id,label,n){
+    var b=el("button",null);
+    b.innerHTML=label+' <span class="n">['+n+']</span>';
+    b.setAttribute("aria-pressed", id===current?"true":"false");
+    b.dataset.cat=id;
+    b.onclick=function(){current=id;renderLibrary();};
+    return b;
+  }
+  function renderFilters(){
+    filterWrap.innerHTML="";
+    filterWrap.appendChild(makeFilterBtn("all","ALL",BOOKS.length));
+    CATS.forEach(function(c){filterWrap.appendChild(makeFilterBtn(c.id,c.name.toUpperCase(),countIn(c.id)));});
+  }
+
+  // ---- cover ----
+  function coverNode(b){
+    var cv=el("div","cover");
+    var strip=el("div","cat-strip",(catMap[b.category]?catMap[b.category].name:b.category).toUpperCase());
+    cv.appendChild(strip);
+    var pat=el("div","pat pat-"+b.category);cv.appendChild(pat);
+    var t=el("div","ct",b.title); if(isCJK(b.title)) t.style.fontFamily='"Noto Sans SC","Microsoft YaHei",sans-serif';
+    var a=el("div","ca",b.author.toUpperCase());
+    cv.appendChild(t);cv.appendChild(a);
+    return cv;
+  }
+
+  // ---- card ----
+  function cardNode(b){
+    var c=el("button","card");c.setAttribute("aria-label",b.title+" by "+b.author);
+    c.appendChild(coverNode(b));
+    var btm=el("div","cardbtm");
+    btm.appendChild(el("span",null,(b.chapters||[]).length+" CH"));
+    var r=el("span","read","READ »");btm.appendChild(r);
+    c.appendChild(btm);
+    c.onclick=function(){openDetail(b.id);};
+    return c;
+  }
+
+  // ---- library render ----
+  var catContainer=$("catContainer");
+  function renderLibrary(){
+    renderFilters();
+    catContainer.innerHTML="";
+    var cats = current==="all" ? CATS : CATS.filter(function(c){return c.id===current;});
+    cats.forEach(function(c){
+      var list=BOOKS.filter(function(b){return b.category===c.id;});
+      if(!list.length) return;
+      var block=el("div","catblock");
+      var head=el("div","cathead");
+      head.appendChild(el("h2",null,c.name));
+      head.appendChild(el("span","tl","["+list.length+"] "+(c.tagline||"")));
+      block.appendChild(head);
+      var g=el("div","grid");
+      list.forEach(function(b){g.appendChild(cardNode(b));});
+      block.appendChild(g);
+      catContainer.appendChild(block);
+    });
+    $("crumb").textContent="// LIBRARY"+(current!=="all"?" / "+(catMap[current]?catMap[current].name.toUpperCase():current):"");
+  }
+
+  // ---- views ----
+  function show(view){
+    ["library","detail","reader"].forEach(function(v){
+      $("view-"+v).classList.toggle("hidden",v!==view);
+    });
+    window.scrollTo(0,0);
+  }
+
+  // ---- detail ----
+  function bookById(id){for(var i=0;i<BOOKS.length;i++)if(BOOKS[i].id===id)return BOOKS[i];return null;}
+  var detailWrap=$("view-detail");
+  function openDetail(id){
+    var b=bookById(id);if(!b)return;
+    detailWrap.innerHTML="";
+    var top=el("div","det-top");
+    var cvWrap=el("div","det-cover");cvWrap.appendChild(coverNode(b));
+    top.appendChild(cvWrap);
+    var info=el("div","det-info");
+    info.appendChild(el("span","label",(catMap[b.category]?catMap[b.category].name:b.category)));
+    var h1=el("h1",null,b.title); if(isCJK(b.title))h1.style.fontFamily='"Noto Sans SC","Microsoft YaHei",sans-serif';
+    info.appendChild(h1);
+    info.appendChild(el("div","byline","BY "+b.author.toUpperCase()));
+    info.appendChild(el("div","blurb",b.blurb||""));
+    var facts=el("div","facts");
+    facts.appendChild(el("span",null,(b.chapters||[]).length+" CHAPTERS"));
+    facts.appendChild(el("span",null,(b.words||0).toLocaleString()+" WORDS"));
+    facts.appendChild(el("span",null,(catMap[b.category]?catMap[b.category].tagline:"").toUpperCase()));
+    info.appendChild(facts);
+    var start=el("a","bigbtn","► START READING");start.href="#";
+    start.onclick=function(e){e.preventDefault();openReader(b.id,0);};
+    info.appendChild(start);
+    top.appendChild(info);
+    detailWrap.appendChild(top);
+
+    var chl=el("div","chlist");
+    (b.chapters||[]).forEach(function(ch,i){
+      var row=el("button","chrow");
+      row.appendChild(el("span","num",String(i+1).padStart(2,"0")));
+      var nm=el("span","nm",ch.title); if(isCJK(ch.title))nm.style.fontFamily='"Noto Sans SC","Microsoft YaHei",sans-serif';
+      row.appendChild(nm);
+      row.appendChild(el("span","ty",ch.type==="verse"?"VERSE":"PROSE"));
+      row.appendChild(el("span","go","OPEN »"));
+      row.onclick=function(){openReader(b.id,i);};
+      chl.appendChild(row);
+    });
+    detailWrap.appendChild(chl);
+
+    var back=el("a","bigbtn","« BACK TO LIBRARY");back.href="#";back.style.marginTop="24px";back.style.background="var(--paper)";back.style.color="var(--ink)";
+    back.onclick=function(e){e.preventDefault();show("library");renderLibrary();};
+    detailWrap.appendChild(back);
+
+    $("crumb").textContent="// "+b.title.toUpperCase();
+    show("detail");
+  }
+
+  // ---- reader ----
+  var fontSizes=[16,18,20,23,26,30];
+  var fsIdx=2;
+  var cur={bookId:null,ch:0};
+  var readerWrap=$("view-reader");
+
+  function openReader(bookId,chIdx){
+    cur.bookId=bookId;cur.ch=chIdx;
+    renderReader();
+    show("reader");
+  }
+
+  function renderReader(){
+    var b=bookById(cur.bookId);if(!b)return;
+    var chapters=b.chapters||[];
+    var ch=chapters[cur.ch];
+    var cjk=isCJK(b.title)||isCJK(ch.title)||(ch.paragraphs&&ch.paragraphs.some(isCJK));
+    readerWrap.innerHTML="";
+    readerWrap.classList.toggle("cjk",!!cjk);
+
+    // controls
+    var ctrl=el("div","rctrl");
+    var bToBook=el("button",null,"« BOOK");bToBook.onclick=function(){openDetail(b.id);};
+    var bToLib=el("button",null,"« LIBRARY");bToLib.onclick=function(){show("library");renderLibrary();};
+    ctrl.appendChild(bToBook);ctrl.appendChild(bToLib);
+
+    var jumpWrap=el("div","grow");jumpWrap.style.display="flex";
+    var sel=el("select");sel.setAttribute("aria-label","Jump to chapter");
+    chapters.forEach(function(c,i){
+      var o=el("option",null,(i+1)+". "+c.title);o.value=i;if(i===cur.ch)o.selected=true;sel.appendChild(o);
+    });
+    sel.onchange=function(){cur.ch=parseInt(sel.value,10);renderReader();};
+    jumpWrap.appendChild(sel);
+    ctrl.appendChild(jumpWrap);
+
+    var pos=el("div","pos","CH "+(cur.ch+1)+"/"+chapters.length);
+    ctrl.appendChild(pos);
+
+    var fs=el("div","fs");
+    var minus=el("button",null,"A−");minus.setAttribute("aria-label","Decrease font size");
+    minus.onclick=function(){if(fsIdx>0){fsIdx--;applyFs();}};
+    var plus=el("button",null,"A+");plus.setAttribute("aria-label","Increase font size");
+    plus.onclick=function(){if(fsIdx<fontSizes.length-1){fsIdx++;applyFs();}};
+    fs.appendChild(minus);fs.appendChild(plus);
+    ctrl.appendChild(fs);
+    readerWrap.appendChild(ctrl);
+
+    // body
+    var body=el("div","reader-body");
+    var rhead=el("div","rhead");
+    rhead.appendChild(el("div","bk",b.title.toUpperCase()+" — "+b.author.toUpperCase()));
+    var h2=el("h2",null,ch.title);if(cjk)h2.style.fontFamily='"Noto Sans SC","Microsoft YaHei",sans-serif';
+    rhead.appendChild(h2);
+    body.appendChild(rhead);
+
+    if(ch.type==="verse"){
+      var v=el("div","verse");
+      (ch.lines||[]).forEach(function(line){
+        var ln=el("div","ln");
+        if(line.trim()===""){ln.className="ln blank";} else {ln.textContent=line;}
+        v.appendChild(ln);
+      });
+      body.appendChild(v);
+    } else {
+      var pr=el("div","prose");
+      (ch.paragraphs||[]).forEach(function(p){pr.appendChild(el("p",null,p));});
+      body.appendChild(pr);
+    }
+    readerWrap.appendChild(body);
+
+    // nav
+    var nav=el("div","readnav");
+    var prev=el("button",null,"« PREV CHAPTER");
+    prev.disabled=cur.ch<=0;
+    prev.onclick=function(){if(cur.ch>0){cur.ch--;renderReader();}};
+    var toc=el("button",null,"CHAPTER LIST");
+    toc.onclick=function(){openDetail(b.id);};
+    var next=el("button",null,"NEXT CHAPTER »");
+    next.disabled=cur.ch>=chapters.length-1;
+    next.onclick=function(){if(cur.ch<chapters.length-1){cur.ch++;renderReader();}};
+    nav.appendChild(prev);nav.appendChild(toc);nav.appendChild(next);
+    readerWrap.appendChild(nav);
+
+    applyFs();
+    $("crumb").textContent="// READING: "+b.title.toUpperCase();
+  }
+  function applyFs(){readerWrap.style.setProperty("--rfs",fontSizes[fsIdx]+"px");}
+
+  // ---- nav home ----
+  $("brandHome").onclick=function(){show("library");renderLibrary();};
+  $("brandHome").onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();show("library");renderLibrary();}};
+
+  // ---- init ----
+  renderLibrary();
+})();
+</script>
+</body>
+</html>

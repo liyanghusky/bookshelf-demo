@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ＮＥＯＮ ＬＩＢＲＡＲＹ ▽ 図書館</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Monoton&family=Space+Mono:wght@400;700&family=Spline+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff5cd0;
+    --hot:#ff2bb1;
+    --purple:#7a2bff;
+    --indigo:#2a0d4f;
+    --cyan:#22e1ff;
+    --cyan-d:#0ac;
+    --bg0:#1a0830;
+    --bg1:#2b0a52;
+    --text:#eafcff;
+    --grid:#ff48c4;
+    --gridc:#27e6ff;
+    --panel:rgba(20,8,46,.72);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Spline Sans',sans-serif;color:var(--text);
+    background:linear-gradient(180deg,#2a0b54 0%,#451163 30%,#a01e74 60%,#ff5b9e 80%,#ffb36b 100%);
+    background-attachment:fixed;min-height:100vh;overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* retro sun + grid floor backdrop */
+  .backdrop{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+  .sun{position:absolute;left:50%;top:8%;transform:translateX(-50%);width:min(70vw,440px);height:min(70vw,440px);
+    border-radius:50%;background:linear-gradient(#fff6a0,#ff4d8d 55%,#ff2bb1);filter:saturate(1.2)}
+  .sun::after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:repeating-linear-gradient(180deg,transparent 0 18px,rgba(42,11,84,.9) 18px 30px);
+    -webkit-mask:linear-gradient(180deg,transparent 45%,#000 46%);mask:linear-gradient(180deg,transparent 45%,#000 46%)}
+  .floor{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:300vw;height:46vh;
+    background:
+      linear-gradient(transparent,rgba(34,225,255,.18)),
+      repeating-linear-gradient(90deg,transparent 0 79px,var(--grid) 79px 81px),
+      repeating-linear-gradient(0deg,transparent 0 39px,var(--gridc) 39px 41px);
+    transform-origin:bottom center;transform:translateX(-50%) perspective(40vh) rotateX(72deg);opacity:.55}
+  .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 12%,#fff,transparent),radial-gradient(1px 1px at 85% 40%,#fff,transparent),radial-gradient(1px 1px at 40% 8%,#fff,transparent),radial-gradient(1px 1px at 10% 60%,#fff,transparent);opacity:.7}
+  .scan{position:fixed;inset:0;z-index:50;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.10) 0 2px,transparent 2px 4px);mix-blend-mode:multiply;opacity:.5}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px 120px;position:relative;z-index:1}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+  /* ---------- Header ---------- */
+  header.top{text-align:center;padding:46px 0 14px}
+  .kata{font-family:'Space Mono',monospace;letter-spacing:.5em;color:var(--cyan);font-size:13px;text-shadow:0 0 8px var(--cyan)}
+  .logo{
+    font-family:'Monoton',cursive;font-size:clamp(34px,9vw,86px);line-height:1.05;margin:8px 0 4px;
+    background:linear-gradient(180deg,#fff,#aef6ff 40%,#ff8fe6 60%,#ff2bb1);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 14px rgba(34,225,255,.55)) drop-shadow(2px 2px 0 rgba(255,43,177,.6));
+    position:relative;
+  }
+  .strap{font-family:'Space Mono',monospace;color:#ffe3fb;letter-spacing:.18em;font-size:13px;text-transform:uppercase}
+  .strap b{color:var(--cyan)}
+
+  /* ---------- Filters ---------- */
+  .filters{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:30px 0 34px}
+  .chip{
+    font-family:'Orbitron',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:12px;
+    padding:11px 18px;color:var(--cyan);border:1px solid var(--cyan);border-radius:4px;
+    background:rgba(10,4,30,.45);box-shadow:0 0 10px rgba(34,225,255,.25),inset 0 0 10px rgba(34,225,255,.12);
+    transition:.2s;backdrop-filter:blur(2px);
+  }
+  .chip:hover{color:#fff;box-shadow:0 0 16px var(--cyan),inset 0 0 14px rgba(34,225,255,.3);transform:translateY(-2px)}
+  .chip.active{color:#0c0524;background:var(--cyan);border-color:#fff;box-shadow:0 0 18px var(--cyan)}
+
+  /* ---------- Library ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:26px}
+  .tile{cursor:pointer;transition:transform .25s}
+  .tile:hover{transform:translateY(-8px)}
+  .cover{
+    aspect-ratio:3/4;border-radius:8px;padding:18px;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:space-between;
+    border:1px solid rgba(255,255,255,.25);
+    box-shadow:0 10px 28px rgba(20,0,40,.6),0 0 22px rgba(255,43,177,.25);
+  }
+  .cover::before{content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 2px,transparent 2px 5px);mix-blend-mode:overlay}
+  .cover .sun-m{position:absolute;left:50%;top:34%;transform:translateX(-50%);width:78%;aspect-ratio:1;border-radius:50%;
+    background:linear-gradient(#fff7c0,#ff4d8d);opacity:.85}
+  .cover .sun-m::after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:repeating-linear-gradient(180deg,transparent 0 7px,rgba(0,0,0,.35) 7px 11px);
+    -webkit-mask:linear-gradient(transparent 48%,#000 49%);mask:linear-gradient(transparent 48%,#000 49%)}
+  .cover .gridm{position:absolute;left:-50%;right:-50%;bottom:0;height:36%;
+    background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(34,225,255,.5) 22px 24px),repeating-linear-gradient(0deg,transparent 0 16px,rgba(34,225,255,.4) 16px 18px);
+    transform:perspective(20vh) rotateX(68deg);transform-origin:bottom}
+  .cover .ckata{font-family:'Space Mono';font-size:10px;letter-spacing:.3em;color:#fff;opacity:.8;position:relative;text-shadow:0 0 6px var(--cyan)}
+  .cover .cbottom{position:relative}
+  .cover .ct{font-family:'Orbitron';font-weight:900;font-size:18px;line-height:1.08;color:#fff;text-shadow:0 0 10px rgba(0,0,0,.6),2px 0 var(--hot),-2px 0 var(--cyan)}
+  .cover .ca{font-family:'Space Mono';font-size:11px;color:#ffe3fb;margin-top:6px;letter-spacing:.05em}
+  /* per-category gradient tiles */
+  .cat-fiction .cover{background:linear-gradient(160deg,#7a2bff,#ff2bb1 70%,#ffb36b)}
+  .cat-mystery .cover{background:linear-gradient(160deg,#11043a,#5a1aa0 60%,#ff2bb1)}
+  .cat-scifi .cover{background:linear-gradient(160deg,#06204a,#1170c9 50%,#22e1ff)}
+  .cat-philosophy .cover{background:linear-gradient(160deg,#3a0a5e,#a01e9e 60%,#ff8fe6)}
+  .cat-poetry .cover{background:linear-gradient(160deg,#2a0b54,#ff5cd0 70%,#ffd6a0)}
+
+  .tmeta{margin-top:12px;text-align:left}
+  .tmeta h3{font-family:'Orbitron';font-weight:700;font-size:14px;margin:0;color:#fff;text-shadow:0 0 8px rgba(34,225,255,.4)}
+  .tmeta p{font-family:'Space Mono';font-size:12px;color:#ffd6f6;margin:4px 0 0}
+
+  .empty{grid-column:1/-1;text-align:center;padding:80px 20px;font-family:'Orbitron';color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+
+  /* ---------- Detail ---------- */
+  .back{display:inline-flex;align-items:center;gap:8px;margin:26px 0 24px;font-family:'Orbitron';font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 8px var(--cyan);transition:.2s}
+  .back:hover{color:#fff;transform:translateX(-4px)}
+  .detail{display:grid;grid-template-columns:260px 1fr;gap:44px}
+  @media(max-width:760px){.detail{grid-template-columns:1fr;gap:26px}}
+  .dinfo .pill{display:inline-block;font-family:'Space Mono';font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:6px 14px;border:1px solid var(--cyan);border-radius:30px;color:var(--cyan);box-shadow:0 0 12px rgba(34,225,255,.3);margin-bottom:14px}
+  .dinfo h1{font-family:'Orbitron';font-weight:900;font-size:clamp(28px,5vw,48px);line-height:1.02;margin:0;
+    color:#fff;text-shadow:3px 0 var(--hot),-3px 0 var(--cyan),0 0 30px rgba(255,43,177,.5)}
+  .dinfo .by{font-family:'Space Mono';font-size:16px;color:#ffd6f6;margin:14px 0 22px;letter-spacing:.05em}
+  .dinfo .blurb{font-family:'Spline Sans';font-size:17px;line-height:1.75;color:#f3e6ff;background:var(--panel);
+    border:1px solid rgba(34,225,255,.3);border-left:3px solid var(--hot);padding:18px 22px;border-radius:8px;
+    box-shadow:0 0 24px rgba(122,43,255,.25);backdrop-filter:blur(4px)}
+  .start-btn{margin-top:22px;font-family:'Orbitron';font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:14px;
+    color:#0c0524;background:linear-gradient(90deg,var(--cyan),var(--pink));padding:15px 32px;border-radius:6px;
+    box-shadow:0 0 22px rgba(255,92,208,.6);transition:.2s}
+  .start-btn:hover{filter:brightness(1.15);box-shadow:0 0 32px var(--pink);transform:translateY(-2px)}
+
+  .contents{margin-top:48px}
+  .contents h2{font-family:'Orbitron';font-weight:700;font-size:18px;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 10px var(--cyan);margin:0 0 18px;display:flex;align-items:center;gap:12px}
+  .contents h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--cyan),transparent)}
+  .chap{display:flex;align-items:center;gap:16px;width:100%;text-align:left;background:var(--panel);
+    border:1px solid rgba(34,225,255,.22);border-radius:8px;padding:15px 18px;margin-bottom:12px;
+    transition:.2s;backdrop-filter:blur(3px)}
+  .chap:hover{border-color:var(--pink);box-shadow:0 0 20px rgba(255,92,208,.4);transform:translateX(6px)}
+  .chap .num{flex:0 0 40px;height:40px;border-radius:6px;display:grid;place-items:center;font-family:'Orbitron';font-weight:900;
+    color:#0c0524;background:linear-gradient(135deg,var(--cyan),var(--pink))}
+  .chap .ct{flex:1;font-family:'Spline Sans';font-weight:500;font-size:16px;color:#fff}
+  .chap .arrow{font-family:'Space Mono';color:var(--cyan);font-size:18px}
+
+  /* ---------- Reader ---------- */
+  .reader-bar{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+    background:rgba(14,5,34,.86);backdrop-filter:blur(8px);border:1px solid rgba(34,225,255,.3);
+    border-radius:10px;padding:11px 14px;margin:0 0 22px;box-shadow:0 0 24px rgba(122,43,255,.35)}
+  .rb-btn{font-family:'Orbitron';font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);
+    border:1px solid rgba(34,225,255,.45);border-radius:5px;padding:9px 13px;transition:.18s;background:rgba(34,225,255,.06)}
+  .rb-btn:hover{color:#fff;background:rgba(34,225,255,.18);box-shadow:0 0 12px var(--cyan)}
+  .rb-btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+  .rb-spacer{flex:1}
+  select.jump{font-family:'Space Mono';font-size:12px;color:var(--cyan);background:rgba(14,5,34,.9);
+    border:1px solid rgba(34,225,255,.45);border-radius:5px;padding:9px 10px;outline:none;cursor:pointer;max-width:200px}
+  select.jump option{background:#160736;color:#fff}
+  .fsz{display:flex;gap:4px}
+  .fsz button{font-family:'Orbitron';font-weight:700;color:var(--pink);border:1px solid rgba(255,92,208,.5);border-radius:5px;width:38px;height:36px;background:rgba(255,92,208,.08);transition:.18s}
+  .fsz button:hover{color:#fff;box-shadow:0 0 12px var(--pink);background:rgba(255,92,208,.2)}
+
+  .reader{max-width:680px;margin:0 auto;background:rgba(12,5,30,.74);border:1px solid rgba(34,225,255,.25);
+    border-radius:14px;padding:clamp(22px,5vw,50px);box-shadow:0 0 40px rgba(122,43,255,.3);backdrop-filter:blur(6px)}
+  .reader .r-kick{font-family:'Space Mono';text-align:center;letter-spacing:.28em;text-transform:uppercase;font-size:11px;color:var(--cyan);text-shadow:0 0 8px var(--cyan)}
+  .reader h1{font-family:'Orbitron';font-weight:900;text-align:center;font-size:clamp(24px,4vw,38px);margin:14px 0 8px;
+    color:#fff;text-shadow:2px 0 var(--hot),-2px 0 var(--cyan)}
+  .reader .r-orn{text-align:center;color:var(--pink);font-family:'Space Mono';letter-spacing:.5em;margin:0 0 34px;font-size:12px}
+  .reader .prose{font-family:'Spline Sans';font-weight:300;line-height:1.85;font-size:var(--rsize,19px);color:#ece3ff}
+  .reader .prose p{margin:0 0 1.35em}
+  .reader .prose p:first-of-type::first-letter{font-family:'Orbitron';font-weight:900;font-size:3em;float:left;line-height:.8;padding:6px 12px 0 0;color:var(--cyan);text-shadow:0 0 14px var(--cyan)}
+  .reader .verse{font-family:'Spline Sans';line-height:1.95;font-size:var(--rsize,19px);color:#ece3ff}
+  .reader .verse .vline{white-space:pre-wrap}
+  .reader .verse .vblank{height:1em}
+  .reader em,.reader i{font-style:italic;color:var(--cyan)}
+  .reader .endmark{text-align:center;margin-top:40px;font-family:'Space Mono';letter-spacing:.5em;color:var(--pink)}
+  .reader-foot{max-width:680px;margin:22px auto 0;display:flex;gap:12px;justify-content:space-between;align-items:center}
+  .reader-foot .rb-btn{flex:0 0 auto}
+  .reader-foot .pos{font-family:'Space Mono';font-size:12px;color:#ffd6f6;letter-spacing:.1em}
+
+  .view{display:none}
+  .view.on{display:block;animation:fade .5s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  footer{margin-top:80px;text-align:center;font-family:'Space Mono';font-size:11px;letter-spacing:.2em;color:#ffd6f6;text-transform:uppercase}
+  footer .k{color:var(--cyan)}
+
+  @media(max-width:500px){.reader-foot{flex-wrap:wrap}.reader-foot .pos{order:-1;width:100%;text-align:center}}
+</style>
+</head>
+<body>
+<div class="backdrop"><div class="stars"></div><div class="sun"></div><div class="floor"></div></div>
+<div class="scan"></div>
+<script src="../../data/books.js"></script>
+
+<div class="wrap">
+  <header class="top">
+    <div class="kata">ネオン・ライブラリー　▽　図書館</div>
+    <div class="logo">NEON LIBRARY</div>
+    <div class="strap">fifteen <b>public-domain</b> dreams · drift &amp; read</div>
+  </header>
+
+  <section id="view-library" class="view on">
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="view-detail" class="view"><div id="detail"></div></section>
+  <section id="view-reader" class="view"><div id="reader-root"></div></section>
+
+  <footer><span class="k">ＥＮＤ　ＯＦ　ＬＩＮＥ</span> · texts from Project Gutenberg · <span class="k">A E S T H E T I C</span></footer>
+</div>
+
+<script>
+const DATA=window.BOOKS, cats=DATA.categories;
+const catName=id=>(cats.find(c=>c.id===id)||{}).name||id;
+const KATA={fiction:'フィクション',mystery:'ミステリー',scifi:'サイファイ',philosophy:'テツガク',poetry:'シ'};
+function fmt(t){let s=String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');return s.replace(/_([^_]+)_/g,'<em>$1</em>');}
+const escAttr=t=>String(t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const FONTS=[16,17,19,21,24];
+let state={filter:'all',book:null,chapter:0,fontidx:2};
+
+function coverHTML(b){
+  return `<div class="cover">
+    <div class="gridm"></div><div class="sun-m"></div>
+    <div class="ckata">${KATA[b.category]||''}</div>
+    <div class="cbottom">
+      <div class="ct">${fmt(b.title)}</div>
+      <div class="ca">▷ ${fmt(b.author)}</div>
+    </div>
+  </div>`;
+}
+
+function renderFilters(){
+  const f=document.getElementById('filters');
+  const all=[{id:'all',name:'All'}].concat(cats);
+  f.innerHTML=all.map(c=>`<button class="chip ${state.filter===c.id?'active':''}" data-cat="${c.id}">${c.name}</button>`).join('');
+  f.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{state.filter=b.dataset.cat;renderFilters();renderGrid();});
+}
+function renderGrid(){
+  const g=document.getElementById('grid');
+  const books=DATA.books.filter(b=>state.filter==='all'||b.category===state.filter);
+  if(!books.length){g.innerHTML='<div class="empty">▓▒░ NO SIGNAL ░▒▓</div>';return;}
+  g.innerHTML=books.map(b=>`
+    <article class="tile cat-${b.category}" data-id="${b.id}" tabindex="0">
+      ${coverHTML(b)}
+      <div class="tmeta"><h3>${fmt(b.title)}</h3><p>${fmt(b.author)}</p></div>
+    </article>`).join('');
+  g.querySelectorAll('.tile').forEach(el=>el.onclick=()=>openBook(el.dataset.id));
+}
+
+function openBook(id){state.book=DATA.books.find(b=>b.id===id);renderDetail();show('detail');window.scrollTo(0,0);}
+function renderDetail(){
+  const b=state.book,d=document.getElementById('detail');
+  const isVerse=b.chapters[0].type==='verse';
+  d.innerHTML=`
+    <button class="back" id="backLib">◄ BACK TO LIBRARY</button>
+    <div class="detail">
+      <div class="dcover cat-${b.category}">${coverHTML(b)}</div>
+      <div class="dinfo">
+        <span class="pill">${KATA[b.category]||''} · ${catName(b.category)}</span>
+        <h1>${fmt(b.title)}</h1>
+        <div class="by">▷ ${fmt(b.author)}</div>
+        <div class="blurb">${fmt(b.blurb)}</div>
+        <button class="start-btn" id="startRead">▶ START READING</button>
+      </div>
+    </div>
+    <div class="contents">
+      <h2>${isVerse?'POEMS':'CHAPTERS'} · ${b.chapters.length} · ${b.words} WORDS</h2>
+      ${b.chapters.map((ch,i)=>`
+        <button class="chap" data-i="${i}">
+          <span class="num">${String(i+1).padStart(2,'0')}</span>
+          <span class="ct">${fmt(ch.title)}</span>
+          <span class="arrow">▶</span>
+        </button>`).join('')}
+    </div>`;
+  d.querySelector('#backLib').onclick=()=>show('library');
+  d.querySelector('#startRead').onclick=()=>openReader(0);
+  d.querySelectorAll('.chap').forEach(c=>c.onclick=()=>openReader(+c.dataset.i));
+}
+
+function openReader(i){state.chapter=i;renderReader();show('reader');window.scrollTo(0,0);}
+function chapterBody(ch){
+  if(ch.type==='verse'){
+    return `<div class="verse">${ch.lines.map(l=>l.trim()===''?'<div class="vblank"></div>':`<div class="vline">${fmt(l)}</div>`).join('')}</div>`;
+  }
+  return `<div class="prose">${ch.paragraphs.map(p=>`<p>${fmt(p)}</p>`).join('')}</div>`;
+}
+function renderReader(){
+  const b=state.book,ch=b.chapters[state.chapter];
+  const root=document.getElementById('reader-root');
+  document.documentElement.style.setProperty('--rsize',FONTS[state.fontidx]+'px');
+  root.innerHTML=`
+    <div class="reader-bar">
+      <button class="rb-btn" id="rBackBook">◄ BOOK</button>
+      <button class="rb-btn" id="rBackLib">▣ LIBRARY</button>
+      <span class="rb-spacer"></span>
+      <select class="jump" id="rJump">${b.chapters.map((c,i)=>`<option value="${i}" ${i===state.chapter?'selected':''}>${escAttr(c.title)}</option>`).join('')}</select>
+      <div class="fsz"><button id="rDown" title="smaller">A−</button><button id="rUp" title="bigger">A+</button></div>
+    </div>
+    <article class="reader">
+      <div class="r-kick">${fmt(b.title)} · ${fmt(b.author)}</div>
+      <h1>${fmt(ch.title)}</h1>
+      <div class="r-orn">▽ △ ▽</div>
+      ${chapterBody(ch)}
+      <div class="endmark">${state.chapter===b.chapters.length-1?'▓ ＦＩＮ ▓':'▽ ▽ ▽'}</div>
+    </article>
+    <div class="reader-foot">
+      <button class="rb-btn" id="rPrev" ${state.chapter===0?'disabled':''}>◄ PREV</button>
+      <span class="pos">${String(state.chapter+1).padStart(2,'0')} / ${String(b.chapters.length).padStart(2,'0')}</span>
+      <button class="rb-btn" id="rNext" ${state.chapter===b.chapters.length-1?'disabled':''}>NEXT ►</button>
+    </div>`;
+  root.querySelector('#rBackBook').onclick=()=>{renderDetail();show('detail');window.scrollTo(0,0);};
+  root.querySelector('#rBackLib').onclick=()=>show('library');
+  root.querySelector('#rJump').onchange=e=>openReader(+e.target.value);
+  root.querySelector('#rPrev').onclick=()=>{if(state.chapter>0)openReader(state.chapter-1);};
+  root.querySelector('#rNext').onclick=()=>{if(state.chapter<b.chapters.length-1)openReader(state.chapter+1);};
+  root.querySelector('#rDown').onclick=()=>{state.fontidx=Math.max(0,state.fontidx-1);renderReader();};
+  root.querySelector('#rUp').onclick=()=>{state.fontidx=Math.min(FONTS.length-1,state.fontidx+1);renderReader();};
+}
+
+function show(v){document.querySelectorAll('.view').forEach(s=>s.classList.remove('on'));document.getElementById('view-'+v).classList.add('on');}
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('view-reader').classList.contains('on'))return;
+  if(e.key==='ArrowLeft'&&state.chapter>0)openReader(state.chapter-1);
+  if(e.key==='ArrowRight'&&state.chapter<state.book.chapters.length-1)openReader(state.chapter+1);
+});
+renderFilters();renderGrid();
+</script>
+</body>
+</html>

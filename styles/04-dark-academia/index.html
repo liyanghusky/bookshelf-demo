@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Candlelit Library — Dark Academia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --espresso:#1c130d;
+    --espresso-2:#251910;
+    --oxblood:#5a1a1a;
+    --oxblood-deep:#3d1212;
+    --gold:#c9a45c;
+    --gold-soft:#a8853f;
+    --gold-faint:rgba(201,164,92,.35);
+    --parchment:#ece2cc;
+    --ink:#2a2018;
+    --cream-dim:rgba(236,226,204,.72);
+    --shadow:rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(120% 90% at 50% -10%, rgba(90,26,26,.28), transparent 55%),
+      radial-gradient(80% 60% at 80% 110%, rgba(201,164,92,.10), transparent 60%),
+      var(--espresso);
+    color:var(--parchment);
+    font-family:'EB Garamond', Garamond, 'Times New Roman', serif;
+    font-size:18px;line-height:1.6;min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(140% 120% at 50% 35%, transparent 38%, rgba(0,0,0,.45) 100%);
+    mix-blend-mode:multiply;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  #app{position:relative;z-index:1;}
+  ::selection{background:var(--oxblood);color:var(--parchment);}
+
+  .wrap{max-width:1140px;margin:0 auto;padding:0 28px;}
+  header.site{text-align:center;padding:54px 28px 26px;position:relative;}
+  .crest{font-size:1.6rem;color:var(--gold);letter-spacing:.1em;opacity:.85;}
+  h1.title{
+    font-family:'Cormorant Garamond',serif;font-weight:600;
+    font-size:clamp(2.4rem,6vw,4rem);margin:.1em 0 .15em;color:var(--parchment);
+    letter-spacing:.02em;text-shadow:0 2px 18px rgba(0,0,0,.6);
+  }
+  .subtitle{font-variant:small-caps;letter-spacing:.32em;text-transform:lowercase;color:var(--gold);font-size:.82rem;opacity:.9;}
+  .rule{display:flex;align-items:center;justify-content:center;gap:14px;color:var(--gold);margin:20px auto 0;max-width:480px;}
+  .rule::before,.rule::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--gold-faint),transparent);}
+  .rule .diamond{font-size:.7rem;opacity:.8;}
+  .source-note{text-align:center;color:var(--cream-dim);font-style:italic;font-size:.82rem;margin-top:8px;opacity:.7;}
+
+  .filters{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:30px auto 10px;padding:0 12px;}
+  .filter{
+    background:transparent;border:1px solid var(--gold-faint);color:var(--parchment);
+    font-family:inherit;font-size:.86rem;font-variant:small-caps;letter-spacing:.14em;
+    padding:7px 16px;border-radius:2px;cursor:pointer;transition:.25s ease;
+  }
+  .filter:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,164,92,.06);}
+  .filter[aria-pressed="true"]{
+    background:linear-gradient(180deg,var(--oxblood),var(--oxblood-deep));
+    border-color:var(--gold-soft);color:var(--parchment);
+    box-shadow:0 2px 14px rgba(0,0,0,.5),inset 0 0 0 1px rgba(201,164,92,.25);
+  }
+  .filter:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+
+  .cat-section{margin:42px 0;}
+  .cat-head{display:flex;align-items:baseline;gap:16px;margin-bottom:20px;}
+  .cat-head h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.9rem;color:var(--gold);margin:0;font-variant:small-caps;letter-spacing:.04em;}
+  .cat-head .tag{color:var(--cream-dim);font-style:italic;font-size:.92rem;}
+  .cat-head .line{flex:1;height:1px;background:linear-gradient(90deg,var(--gold-faint),transparent);}
+
+  .grid{display:grid;gap:30px 26px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));}
+  .book{
+    cursor:pointer;background:none;border:none;padding:0;text-align:left;
+    font-family:inherit;color:inherit;display:flex;flex-direction:column;gap:12px;
+    transition:transform .3s cubic-bezier(.2,.7,.2,1);
+  }
+  .book:hover{transform:translateY(-6px);}
+  .book:focus-visible{outline:2px solid var(--gold);outline-offset:6px;border-radius:3px;}
+
+  .cover{
+    position:relative;aspect-ratio:2/3;border-radius:3px 5px 5px 3px;
+    background:linear-gradient(125deg, rgba(255,255,255,.05), transparent 40%), var(--cover-bg, linear-gradient(160deg,#3a241a,#22150d));
+    box-shadow:0 16px 30px -12px var(--shadow), inset 6px 0 14px -6px rgba(0,0,0,.6), inset 0 0 0 1px rgba(201,164,92,.16);
+    padding:22px 18px;display:flex;flex-direction:column;overflow:hidden;
+  }
+  .cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:14px;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(255,255,255,.06),rgba(0,0,0,.35));}
+  .cover .plate{position:absolute;inset:12px 12px 12px 18px;border:1px solid var(--gold-faint);border-radius:2px;}
+  .cover .plate::after{content:"";position:absolute;inset:4px;border:1px solid rgba(201,164,92,.18);}
+  .corner{position:absolute;width:16px;height:16px;color:var(--gold);opacity:.7;}
+  .corner.tl{top:16px;left:22px;border-top:1px solid;border-left:1px solid;}
+  .corner.tr{top:16px;right:16px;border-top:1px solid;border-right:1px solid;}
+  .corner.bl{bottom:16px;left:22px;border-bottom:1px solid;border-left:1px solid;}
+  .corner.br{bottom:16px;right:16px;border-bottom:1px solid;border-right:1px solid;}
+  .cover .c-cat{position:relative;z-index:2;font-variant:small-caps;letter-spacing:.22em;font-size:.62rem;color:var(--gold);opacity:.85;text-align:center;}
+  .cover .c-title{position:relative;z-index:2;margin:auto 0;text-align:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.32rem;line-height:1.12;color:#f1e7d0;text-shadow:0 1px 6px rgba(0,0,0,.6);}
+  .cover .c-orn{position:relative;z-index:2;text-align:center;color:var(--gold);opacity:.7;font-size:.9rem;margin:6px 0;}
+  .cover .c-author{position:relative;z-index:2;text-align:center;font-style:italic;font-size:.82rem;color:var(--cream-dim);}
+  .book .meta-title{font-family:'Cormorant Garamond',serif;font-size:1.14rem;font-weight:600;color:var(--parchment);line-height:1.15;}
+  .book .meta-author{font-style:italic;color:var(--cream-dim);font-size:.9rem;}
+
+  .detail{max-width:880px;margin:0 auto;padding:18px 0 70px;}
+  .back{background:none;border:none;color:var(--gold);font-family:inherit;font-variant:small-caps;letter-spacing:.16em;font-size:.9rem;cursor:pointer;padding:8px 0;margin:6px 0 22px;transition:.2s;}
+  .back:hover{color:var(--parchment);letter-spacing:.2em;}
+  .detail-head{display:grid;grid-template-columns:200px 1fr;gap:38px;align-items:start;}
+  .detail-cat{font-variant:small-caps;letter-spacing:.24em;color:var(--gold);font-size:.8rem;}
+  .detail h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(2rem,5vw,3rem);margin:.1em 0 .05em;line-height:1.05;}
+  .detail .author{font-style:italic;font-size:1.2rem;color:var(--cream-dim);margin-bottom:18px;}
+  .detail .blurb{font-size:1.08rem;line-height:1.7;color:var(--parchment);max-width:46ch;}
+  .stat{color:var(--cream-dim);font-size:.86rem;margin-top:14px;font-variant:small-caps;letter-spacing:.1em;}
+  .start-btn{
+    margin-top:24px;display:inline-flex;align-items:center;gap:12px;
+    background:linear-gradient(180deg,var(--oxblood),var(--oxblood-deep));color:var(--parchment);border:1px solid var(--gold-soft);
+    font-family:'Cormorant Garamond',serif;font-size:1.12rem;font-variant:small-caps;letter-spacing:.14em;
+    padding:12px 26px;border-radius:3px;cursor:pointer;
+    box-shadow:0 8px 22px -8px #000,inset 0 0 0 1px rgba(201,164,92,.2);transition:.25s;
+  }
+  .start-btn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -8px #000;color:var(--gold);}
+  .chap-list{list-style:none;margin:46px 0 0;padding:0;}
+  .chap-list .ch-head{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold);font-variant:small-caps;letter-spacing:.06em;margin-bottom:8px;}
+  .chap{width:100%;text-align:left;background:none;border:none;color:var(--parchment);font-family:inherit;font-size:1.06rem;cursor:pointer;display:flex;align-items:baseline;gap:16px;padding:13px 6px;border-bottom:1px solid rgba(201,164,92,.14);transition:.2s;}
+  .chap:hover{color:var(--gold);padding-left:14px;background:linear-gradient(90deg,rgba(201,164,92,.06),transparent);}
+  .chap .num{font-variant:small-caps;color:var(--gold-soft);min-width:2.6em;font-size:.9rem;}
+  .chap .ct{flex:1;}
+  .chap .badge{font-size:.7rem;font-variant:small-caps;letter-spacing:.18em;color:var(--cream-dim);border:1px solid var(--gold-faint);padding:2px 8px;border-radius:2px;}
+  .chap:focus-visible{outline:2px solid var(--gold);outline-offset:-2px;}
+
+  .reader-bar{
+    position:sticky;top:0;z-index:5;
+    background:linear-gradient(180deg,rgba(28,19,13,.98),rgba(28,19,13,.86));backdrop-filter:blur(4px);
+    border-bottom:1px solid var(--gold-faint);display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 22px;
+  }
+  .reader-bar .r-title{font-family:'Cormorant Garamond',serif;color:var(--gold);font-variant:small-caps;letter-spacing:.06em;font-size:1.1rem;margin-right:auto;}
+  .rbtn{background:transparent;border:1px solid var(--gold-faint);color:var(--parchment);font-family:inherit;font-size:.86rem;font-variant:small-caps;letter-spacing:.1em;padding:6px 12px;border-radius:2px;cursor:pointer;transition:.2s;}
+  .rbtn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+  .rbtn:disabled{opacity:.3;cursor:not-allowed;}
+  .rbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  select.jump{background:var(--espresso-2);color:var(--parchment);border:1px solid var(--gold-faint);font-family:inherit;font-size:.86rem;padding:6px 10px;border-radius:2px;cursor:pointer;max-width:200px;}
+  .fontctl{display:inline-flex;border:1px solid var(--gold-faint);border-radius:2px;overflow:hidden;}
+  .fontctl button{background:transparent;border:none;color:var(--parchment);width:34px;height:32px;cursor:pointer;font-family:inherit;font-size:1rem;}
+  .fontctl button:hover{background:rgba(201,164,92,.12);color:var(--gold);}
+
+  .page-wrap{padding:48px 22px 90px;}
+  .page{
+    max-width:680px;margin:0 auto;
+    background:radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.5), transparent 60%), linear-gradient(180deg,#efe6cf,#e6d8b8);
+    color:var(--ink);padding:64px clamp(28px,6vw,72px);border-radius:3px;
+    box-shadow:0 30px 70px -20px #000,inset 0 0 80px rgba(120,90,40,.22),inset 0 0 0 1px rgba(120,90,40,.12);position:relative;
+  }
+  .page::before{content:"";position:absolute;inset:14px;border:1px solid rgba(90,60,20,.18);border-radius:2px;pointer-events:none;}
+  .page .ch-kicker{font-variant:small-caps;letter-spacing:.28em;color:var(--oxblood);font-size:.78rem;text-align:center;}
+  .page h3{font-family:'Cormorant Garamond',serif;font-weight:600;text-align:center;font-size:2rem;color:var(--ink);margin:.2em 0 0;}
+  .page .ch-rule{display:flex;justify-content:center;color:var(--oxblood);margin:14px 0 34px;opacity:.7;}
+  .prose-body{font-size:var(--reading-size,1.18rem);line-height:1.78;}
+  .prose-body p{margin:0 0 1.15em;text-indent:1.6em;}
+  .prose-body p:first-of-type{text-indent:0;}
+  .prose-body p:first-of-type::first-letter{font-family:'Cormorant Garamond',serif;float:left;font-size:3.6em;line-height:.78;padding:.04em .08em 0 0;color:var(--oxblood);font-weight:600;}
+  .verse-body{font-size:var(--reading-size,1.18rem);line-height:1.9;text-align:center;font-style:italic;}
+  .verse-body .vline{white-space:pre-wrap;}
+  .verse-body .vblank{height:1em;}
+  .reader-foot{display:flex;justify-content:space-between;max-width:680px;margin:34px auto 0;gap:14px;}
+  .reader-foot .rbtn{padding:10px 18px;}
+
+  footer.site{text-align:center;color:var(--cream-dim);font-style:italic;font-size:.8rem;padding:40px 0 30px;opacity:.6;}
+
+  @media(max-width:640px){
+    body{font-size:17px;}
+    .detail-head{grid-template-columns:1fr;gap:24px;}
+    .detail-head .cover{max-width:200px;margin:0 auto;}
+    .page{padding:44px 22px;}
+    .reader-bar .r-title{width:100%;margin-bottom:4px;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  "use strict";
+  var DATA = window.BOOKS;
+  var app = document.getElementById('app');
+  var catMap = {};
+  DATA.categories.forEach(function(c){ catMap[c.id]=c; });
+
+  var COVERS = {
+    fiction:   'linear-gradient(160deg,#3a2418,#21130b)',
+    mystery:   'linear-gradient(160deg,#2a1c2c,#160c18)',
+    scifi:     'linear-gradient(160deg,#1b2630,#0c141b)',
+    philosophy:'linear-gradient(160deg,#33271a,#1c150c)',
+    poetry:    'linear-gradient(160deg,#3a1a1f,#1e0d10)'
+  };
+
+  var state = { view:'library', filter:'all', bookId:null, chapter:0, fontSize:1.18 };
+
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function bookById(id){ return DATA.books.filter(function(b){return b.id===id;})[0]; }
+  function fmt(t){ return esc(t).replace(/_([^_]+)_/g,'<em>$1</em>'); }
+  function roman(n){var map=[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']],out='';for(var i=0;i<map.length;i++){while(n>=map[i][0]){out+=map[i][1];n-=map[i][0];}}return out;}
+
+  function coverHTML(b){
+    var c = catMap[b.category];
+    return '<div class="cover" style="--cover-bg:'+COVERS[b.category]+'">'+
+      '<div class="plate"></div>'+
+      '<span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>'+
+      '<div class="c-cat">'+esc(c?c.name:'')+'</div>'+
+      '<div class="c-title">'+esc(b.title)+'</div>'+
+      '<div class="c-orn">&#10086;</div>'+
+      '<div class="c-author">'+esc(b.author)+'</div>'+
+    '</div>';
+  }
+
+  function filterBtn(id,label){
+    return '<button class="filter" data-cat="'+id+'" aria-pressed="'+(state.filter===id)+'">'+esc(label)+'</button>';
+  }
+
+  function renderLibrary(){
+    var h = '<header class="site">'+
+      '<div class="crest">&#10070;</div>'+
+      '<h1 class="title">The Candlelit Library</h1>'+
+      '<div class="subtitle">A Nocturne of Letters</div>'+
+      '<div class="rule"><span class="diamond">&#10022;</span></div>'+
+      '<div class="source-note">'+esc(DATA.source)+'</div>'+
+    '</header><div class="wrap"><div class="filters" role="group" aria-label="Filter by category">';
+    h += filterBtn('all','All Volumes');
+    DATA.categories.forEach(function(c){ h += filterBtn(c.id,c.name); });
+    h += '</div>';
+
+    var cats = state.filter==='all' ? DATA.categories : DATA.categories.filter(function(c){return c.id===state.filter;});
+    cats.forEach(function(c){
+      var books = DATA.books.filter(function(b){return b.category===c.id;});
+      if(!books.length) return;
+      h += '<section class="cat-section"><div class="cat-head"><h2>'+esc(c.name)+'</h2><span class="tag">'+esc(c.tagline)+'</span><span class="line"></span></div><div class="grid">';
+      books.forEach(function(b){
+        h += '<button class="book" data-book="'+b.id+'">'+coverHTML(b)+
+          '<div><div class="meta-title">'+esc(b.title)+'</div><div class="meta-author">'+esc(b.author)+'</div></div></button>';
+      });
+      h += '</div></section>';
+    });
+    h += '</div><footer class="site">Per ardua ad astra &mdash; read by candlelight.</footer>';
+    app.innerHTML = h;
+
+    each('.filter',function(btn){ btn.onclick=function(){ state.filter=btn.getAttribute('data-cat'); renderLibrary(); window.scrollTo({top:0}); }; });
+    each('.book',function(btn){ btn.onclick=function(){ openBook(btn.getAttribute('data-book')); }; });
+  }
+
+  function openBook(id){ state.bookId=id; state.view='detail'; renderDetail(); window.scrollTo({top:0}); }
+
+  function renderDetail(){
+    var b = bookById(state.bookId), c = catMap[b.category];
+    var h = '<div class="wrap"><div class="detail">'+
+      '<button class="back" data-act="lib">&larr; Back to the Library</button>'+
+      '<div class="detail-head"><div>'+coverHTML(b)+'</div><div>'+
+      '<div class="detail-cat">'+esc(c.name)+'</div>'+
+      '<h2>'+esc(b.title)+'</h2>'+
+      '<div class="author">by '+esc(b.author)+'</div>'+
+      '<p class="blurb">'+esc(b.blurb)+'</p>'+
+      '<div class="stat">'+b.chapters.length+' chapters &middot; '+b.words.toLocaleString()+' words</div>'+
+      '<button class="start-btn" data-act="read">&#10070; Begin Reading</button>'+
+      '</div></div><ul class="chap-list"><li class="ch-head">Contents</li>';
+    b.chapters.forEach(function(ch,i){
+      h += '<li><button class="chap" data-ch="'+i+'"><span class="num">'+roman(i+1)+'</span><span class="ct">'+esc(ch.title)+'</span><span class="badge">'+(ch.type==='verse'?'verse':'prose')+'</span></button></li>';
+    });
+    h += '</ul></div></div>';
+    app.innerHTML = h;
+
+    app.querySelector('[data-act="lib"]').onclick=function(){ state.view='library'; renderLibrary(); window.scrollTo({top:0}); };
+    app.querySelector('[data-act="read"]').onclick=function(){ openReader(0); };
+    each('.chap',function(btn){ btn.onclick=function(){ openReader(parseInt(btn.getAttribute('data-ch'),10)); }; });
+  }
+
+  function openReader(idx){ state.view='reader'; state.chapter=idx; renderReader(); window.scrollTo({top:0}); }
+
+  function renderReader(){
+    var b = bookById(state.bookId), idx = state.chapter, ch = b.chapters[idx];
+    var h = '<div class="reader"><div class="reader-bar"><span class="r-title">'+esc(b.title)+'</span>'+
+      '<button class="rbtn" data-act="lib">Library</button>'+
+      '<button class="rbtn" data-act="book">Contents</button>'+
+      '<select class="jump" aria-label="Jump to chapter">';
+    b.chapters.forEach(function(c,i){ h += '<option value="'+i+'"'+(i===idx?' selected':'')+'>'+esc(c.title)+'</option>'; });
+    h += '</select>'+
+      '<button class="rbtn" data-act="prev"'+(idx===0?' disabled':'')+'>&larr; Prev</button>'+
+      '<button class="rbtn" data-act="next"'+(idx===b.chapters.length-1?' disabled':'')+'>Next &rarr;</button>'+
+      '<span class="fontctl"><button data-act="smaller" aria-label="Smaller text">A&minus;</button><button data-act="bigger" aria-label="Larger text">A+</button></span>'+
+      '</div><div class="page-wrap"><article class="page">'+
+      '<div class="ch-kicker">'+esc(b.author)+'</div>'+
+      '<h3>'+esc(ch.title)+'</h3>'+
+      '<div class="ch-rule">&#10022; &nbsp; &#10086; &nbsp; &#10022;</div>';
+
+    if(ch.type==='verse'){
+      h += '<div class="verse-body" style="--reading-size:'+state.fontSize+'rem">';
+      ch.lines.forEach(function(ln){ h += (ln.trim()===''?'<div class="vblank"></div>':'<div class="vline">'+fmt(ln)+'</div>'); });
+      h += '</div>';
+    } else {
+      h += '<div class="prose-body" style="--reading-size:'+state.fontSize+'rem">';
+      ch.paragraphs.forEach(function(p){ h += '<p>'+fmt(p)+'</p>'; });
+      h += '</div>';
+    }
+    h += '</article><div class="reader-foot">'+
+      '<button class="rbtn" data-act="prev"'+(idx===0?' disabled':'')+'>&larr; Previous</button>'+
+      '<button class="rbtn" data-act="next"'+(idx===b.chapters.length-1?' disabled':'')+'>Next chapter &rarr;</button>'+
+      '</div></div></div>';
+    app.innerHTML = h;
+
+    function go(d){ var n=idx+d; if(n>=0&&n<b.chapters.length) openReader(n); }
+    each('[data-act="prev"]',function(x){x.onclick=function(){go(-1);};});
+    each('[data-act="next"]',function(x){x.onclick=function(){go(1);};});
+    app.querySelector('[data-act="lib"]').onclick=function(){ state.view='library'; renderLibrary(); window.scrollTo({top:0}); };
+    app.querySelector('[data-act="book"]').onclick=function(){ state.view='detail'; renderDetail(); window.scrollTo({top:0}); };
+    app.querySelector('.jump').onchange=function(e){ openReader(parseInt(e.target.value,10)); };
+    app.querySelector('[data-act="smaller"]').onclick=function(){ state.fontSize=Math.max(.92,state.fontSize-.1); renderReader(); };
+    app.querySelector('[data-act="bigger"]').onclick=function(){ state.fontSize=Math.min(1.9,state.fontSize+.1); renderReader(); };
+  }
+
+  function each(sel,fn){ Array.prototype.forEach.call(app.querySelectorAll(sel),fn); }
+
+  document.addEventListener('keydown',function(e){
+    if(state.view!=='reader') return;
+    var b=bookById(state.bookId);
+    if(e.key==='ArrowLeft'&&state.chapter>0) openReader(state.chapter-1);
+    if(e.key==='ArrowRight'&&state.chapter<b.chapters.length-1) openReader(state.chapter+1);
+  });
+
+  renderLibrary();
+})();
+</script>
+</body>
+</html>

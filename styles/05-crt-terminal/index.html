@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOOKSHELF.SYS — CRT Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#04100a;
+    --bg-2:#061a10;
+    --phos:#33ff66;
+    --phos-dim:#1f9c40;
+    --phos-faint:rgba(51,255,102,.28);
+    --phos-glow:rgba(51,255,102,.55);
+    --shadowtxt:0 0 6px var(--phos-glow);
+  }
+  html[data-amber]{
+    --bg:#150c02;
+    --bg-2:#1d1204;
+    --phos:#ffb000;
+    --phos-dim:#b87800;
+    --phos-faint:rgba(255,176,0,.28);
+    --phos-glow:rgba(255,176,0,.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--phos);
+    font-family:'IBM Plex Mono','Courier New',monospace;
+    font-size:16px;line-height:1.55;min-height:100vh;
+    text-shadow:var(--shadowtxt);
+  }
+  /* screen curvature + glow */
+  .screen{
+    position:relative;min-height:100vh;
+    background:radial-gradient(120% 110% at 50% 50%, var(--bg-2), var(--bg) 75%);
+    overflow-x:hidden;
+  }
+  /* scanlines */
+  .screen::before{
+    content:"";position:fixed;inset:0;z-index:50;pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.0) 0px, rgba(0,0,0,.0) 2px, rgba(0,0,0,.28) 3px, rgba(0,0,0,.28) 4px);
+    mix-blend-mode:multiply;
+  }
+  /* vignette + flicker */
+  .screen::after{
+    content:"";position:fixed;inset:0;z-index:51;pointer-events:none;
+    background:radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%);
+    animation:flicker 6s infinite steps(60);
+  }
+  @keyframes flicker{
+    0%,100%{opacity:1;} 3%{opacity:.94;} 6%{opacity:1;} 47%{opacity:.97;} 48%{opacity:.88;} 49%{opacity:1;} 78%{opacity:.95;}
+  }
+  @media (prefers-reduced-motion: reduce){ .screen::after{animation:none;} .cursor{animation:none;} }
+  ::selection{background:var(--phos);color:var(--bg);text-shadow:none;}
+
+  .wrap{max-width:980px;margin:0 auto;padding:22px 18px 80px;position:relative;z-index:1;}
+
+  /* top status bar */
+  .statusbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    border:1px solid var(--phos-faint);padding:6px 12px;margin-bottom:18px;
+    font-size:.82rem;letter-spacing:.04em;
+  }
+  .statusbar .sb-left{margin-right:auto;}
+  .statusbar .blink{animation:blink 1.1s steps(1) infinite;}
+  .amber-toggle{
+    background:transparent;border:1px solid var(--phos-faint);color:var(--phos);
+    font-family:inherit;font-size:.8rem;padding:3px 10px;cursor:pointer;text-shadow:var(--shadowtxt);
+  }
+  .amber-toggle:hover{background:var(--phos);color:var(--bg);text-shadow:none;}
+
+  pre.banner{
+    font-family:'VT323',monospace;font-size:clamp(14px,2.6vw,22px);line-height:1.05;
+    margin:0 0 6px;white-space:pre;overflow-x:auto;color:var(--phos);
+    text-shadow:0 0 8px var(--phos-glow);
+  }
+  .tagline{font-size:.9rem;color:var(--phos-dim);margin:0 0 4px;}
+  .prompt-line{margin:18px 0 6px;font-size:1rem;}
+  .prompt-line .ps1{color:var(--phos-dim);}
+  .cursor{display:inline-block;width:.6em;height:1.05em;background:var(--phos);vertical-align:-.18em;margin-left:2px;animation:blink 1.05s steps(1) infinite;box-shadow:0 0 8px var(--phos-glow);}
+  @keyframes blink{0%,50%{opacity:1;}50.01%,100%{opacity:0;}}
+
+  /* filters */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 22px;}
+  .filter{
+    background:transparent;border:1px solid var(--phos-faint);color:var(--phos);
+    font-family:inherit;font-size:.86rem;padding:5px 12px;cursor:pointer;text-shadow:var(--shadowtxt);
+    transition:.12s;
+  }
+  .filter:hover{background:rgba(51,255,102,.12);}
+  .filter[aria-pressed="true"]{background:var(--phos);color:var(--bg);text-shadow:none;font-weight:600;}
+  .filter:focus-visible{outline:2px solid var(--phos);outline-offset:2px;}
+
+  /* book grid as boxed entries */
+  .cat-block{margin:8px 0 26px;}
+  .cat-title{font-family:'VT323',monospace;font-size:1.5rem;color:var(--phos);border-bottom:1px dashed var(--phos-faint);padding-bottom:4px;margin-bottom:14px;}
+  .cat-title .tag{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--phos-dim);margin-left:10px;}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));}
+  .book{
+    background:transparent;border:none;padding:0;text-align:left;cursor:pointer;
+    font-family:inherit;color:var(--phos);text-shadow:var(--shadowtxt);
+  }
+  .ascii-cover{
+    border:1px solid var(--phos-faint);padding:14px 12px;position:relative;
+    background:linear-gradient(180deg, rgba(51,255,102,.04), transparent);
+    transition:.15s;min-height:150px;display:flex;flex-direction:column;
+  }
+  .book:hover .ascii-cover{border-color:var(--phos);box-shadow:0 0 18px -4px var(--phos-glow);background:rgba(51,255,102,.07);}
+  .book:focus-visible{outline:2px solid var(--phos);outline-offset:3px;}
+  .ascii-cover .cat-tag{font-size:.66rem;color:var(--phos-dim);letter-spacing:.18em;}
+  .ascii-cover .art{font-family:'VT323',monospace;font-size:1.5rem;line-height:1.4;margin:auto 0;color:var(--phos);text-shadow:0 0 8px var(--phos-glow);}
+  .ascii-cover .bt{font-weight:600;margin-top:8px;font-size:.95rem;}
+  .ascii-cover .ba{font-size:.8rem;color:var(--phos-dim);}
+  .book .runline{font-size:.78rem;color:var(--phos-dim);margin-top:6px;}
+  .book:hover .runline{color:var(--phos);}
+
+  /* detail */
+  .back{background:transparent;border:1px solid var(--phos-faint);color:var(--phos);font-family:inherit;font-size:.84rem;padding:5px 12px;cursor:pointer;text-shadow:var(--shadowtxt);margin-bottom:16px;}
+  .back:hover{background:var(--phos);color:var(--bg);text-shadow:none;}
+  .detail-grid{display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start;}
+  .detail h2{font-family:'VT323',monospace;font-size:2.4rem;margin:0 0 2px;color:var(--phos);text-shadow:0 0 10px var(--phos-glow);}
+  .detail .by{color:var(--phos-dim);margin-bottom:14px;}
+  .kv{font-size:.86rem;margin:3px 0;}
+  .kv b{color:var(--phos-dim);font-weight:400;}
+  .blurb-box{border:1px solid var(--phos-faint);padding:12px 14px;margin:14px 0;font-size:.95rem;line-height:1.6;background:linear-gradient(180deg,rgba(51,255,102,.04),transparent);}
+  .blurb-box::before{content:"// SYNOPSIS";display:block;color:var(--phos-dim);font-size:.74rem;letter-spacing:.14em;margin-bottom:6px;}
+  .start-btn{background:var(--phos);color:var(--bg);border:none;font-family:inherit;font-weight:600;font-size:.95rem;padding:10px 20px;cursor:pointer;text-shadow:none;letter-spacing:.04em;}
+  .start-btn:hover{box-shadow:0 0 18px -2px var(--phos-glow);}
+  .toc{margin-top:26px;}
+  .toc .toc-h{color:var(--phos-dim);font-size:.8rem;letter-spacing:.14em;margin-bottom:8px;}
+  .chap{width:100%;text-align:left;background:transparent;border:none;border-bottom:1px solid var(--phos-faint);color:var(--phos);font-family:inherit;font-size:.95rem;cursor:pointer;padding:10px 4px;display:flex;gap:14px;align-items:baseline;text-shadow:var(--shadowtxt);transition:.12s;}
+  .chap:hover{background:rgba(51,255,102,.1);padding-left:10px;}
+  .chap .idx{color:var(--phos-dim);min-width:3.2em;}
+  .chap .ct{flex:1;}
+  .chap .tp{font-size:.72rem;color:var(--phos-dim);border:1px solid var(--phos-faint);padding:1px 7px;}
+  .chap:focus-visible{outline:2px solid var(--phos);outline-offset:-2px;}
+
+  /* reader */
+  .reader-bar{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--phos-faint);display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 0;margin-bottom:8px;}
+  .reader-bar .rt{margin-right:auto;font-size:.86rem;color:var(--phos-dim);}
+  .reader-bar .rt b{color:var(--phos);font-weight:400;}
+  .rbtn{background:transparent;border:1px solid var(--phos-faint);color:var(--phos);font-family:inherit;font-size:.82rem;padding:5px 11px;cursor:pointer;text-shadow:var(--shadowtxt);}
+  .rbtn:hover:not(:disabled){background:var(--phos);color:var(--bg);text-shadow:none;}
+  .rbtn:disabled{opacity:.3;cursor:not-allowed;}
+  .rbtn:focus-visible{outline:2px solid var(--phos);outline-offset:2px;}
+  select.jump{background:var(--bg-2);color:var(--phos);border:1px solid var(--phos-faint);font-family:inherit;font-size:.82rem;padding:5px 8px;cursor:pointer;text-shadow:var(--shadowtxt);max-width:200px;}
+  .fontctl{display:inline-flex;border:1px solid var(--phos-faint);}
+  .fontctl button{background:transparent;border:none;color:var(--phos);width:32px;height:30px;cursor:pointer;font-family:inherit;text-shadow:var(--shadowtxt);}
+  .fontctl button:hover{background:var(--phos);color:var(--bg);text-shadow:none;}
+
+  .read-area{max-width:74ch;margin:8px auto 0;}
+  .read-head{font-family:'VT323',monospace;font-size:1.8rem;color:var(--phos);text-shadow:0 0 10px var(--phos-glow);margin:18px 0 2px;}
+  .read-sub{color:var(--phos-dim);font-size:.82rem;margin-bottom:18px;}
+  .read-sub::before{content:"$ cat ";}
+  .prose-body{font-size:var(--reading-size,1.02rem);line-height:1.75;}
+  .prose-body p{margin:0 0 1.1em;}
+  .verse-body{font-size:var(--reading-size,1.02rem);line-height:1.7;}
+  .verse-body .vline{white-space:pre-wrap;}
+  .verse-body .vblank{height:.9em;}
+  .eof{color:var(--phos-dim);margin:26px 0 0;font-size:.84rem;}
+  .reader-foot{display:flex;justify-content:space-between;gap:12px;margin:24px 0 0;}
+  .reader-foot .rbtn{padding:9px 16px;}
+
+  footer.sys{margin-top:34px;border-top:1px dashed var(--phos-faint);padding-top:12px;font-size:.78rem;color:var(--phos-dim);}
+
+  @media(max-width:620px){
+    .detail-grid{grid-template-columns:1fr;}
+    .ascii-cover{min-height:130px;}
+    .reader-bar .rt{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="screen"><div class="wrap" id="app"></div></div>
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  "use strict";
+  var DATA = window.BOOKS;
+  var app = document.getElementById('app');
+  var catMap = {}; DATA.categories.forEach(function(c){ catMap[c.id]=c; });
+
+  // ascii motif per category
+  var ART = {
+    fiction:    "[#####]\n[# || #]\n[#####]",
+    mystery:    "(?)_(?)\n  /|\\\n  / \\",
+    scifi:      "<*>--<*>\n  |##|\n <____>",
+    philosophy: " {~~~}\n  (o)\n /___\\",
+    poetry:     "  ~ . ~\n . ~ . ~ .\n  ~ . ~"
+  };
+
+  var state = { view:'library', filter:'all', bookId:null, chapter:0, fontSize:1.02 };
+
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function bookById(id){ return DATA.books.filter(function(b){return b.id===id;})[0]; }
+  function fmt(t){ return esc(t).replace(/_([^_]+)_/g,'<em>$1</em>'); }
+  function slug(b){ return b.id; }
+  function each(sel,fn){ Array.prototype.forEach.call(app.querySelectorAll(sel),fn); }
+
+  function statusbar(){
+    return '<div class="statusbar"><span class="sb-left">BOOKSHELF.SYS v3.3 &mdash; '+esc(DATA.source)+'</span>'+
+      '<span>READY<span class="blink">_</span></span>'+
+      '<button class="amber-toggle" id="amber">[ amber mode ]</button></div>';
+  }
+
+  function bindAmber(){
+    var btn=document.getElementById('amber');
+    if(!btn) return;
+    btn.onclick=function(){
+      if(document.documentElement.hasAttribute('data-amber')){ document.documentElement.removeAttribute('data-amber'); btn.textContent='[ amber mode ]'; }
+      else { document.documentElement.setAttribute('data-amber',''); btn.textContent='[ green mode ]'; }
+    };
+    if(document.documentElement.hasAttribute('data-amber')) btn.textContent='[ green mode ]';
+  }
+
+  function asciiCover(b){
+    var c=catMap[b.category];
+    return '<div class="ascii-cover"><div class="cat-tag">'+esc((c?c.name:'').toUpperCase())+'</div>'+
+      '<pre class="art">'+esc(ART[b.category]||'[####]')+'</pre>'+
+      '<div class="bt">'+esc(b.title)+'</div>'+
+      '<div class="ba">'+esc(b.author)+'</div></div>';
+  }
+
+  function filterBtn(id,label){ return '<button class="filter" data-cat="'+id+'" aria-pressed="'+(state.filter===id)+'">'+esc(label)+'</button>'; }
+
+  function renderLibrary(){
+    var h = statusbar();
+    h += '<pre class="banner">'+
+      ' ____   ___   ___  _  ______ _   _ _____ _    _____\n'+
+      '| __ ) / _ \\ / _ \\| |/ / ___| | | | ____| |  |  ___|\n'+
+      "|  _ \\| | | | | | | ' /\\___ \\ |_| |  _| | |  | |_\n"+
+      '| |_) | |_| | |_| | . \\ ___) |  _  | |___| |__|  _|\n'+
+      '|____/ \\___/ \\___/|_|\\_\\____/|_| |_|_____|_____|_|'+
+    '</pre>';
+    h += '<p class="tagline">// a public-domain reading terminal. 15 volumes online.</p>';
+    h += '<div class="prompt-line"><span class="ps1">guest@bookshelf:~$</span> ls --category '+
+         (state.filter==='all'?'*':esc(state.filter))+'<span class="cursor"></span></div>';
+    h += '<div class="filters" role="group" aria-label="Filter by category">';
+    h += filterBtn('all','* all');
+    DATA.categories.forEach(function(c){ h += filterBtn(c.id, c.id); });
+    h += '</div>';
+
+    var cats = state.filter==='all' ? DATA.categories : DATA.categories.filter(function(c){return c.id===state.filter;});
+    cats.forEach(function(c){
+      var books = DATA.books.filter(function(b){return b.category===c.id;});
+      if(!books.length) return;
+      h += '<div class="cat-block"><div class="cat-title">/'+esc(c.id)+'<span class="tag">'+esc(c.tagline)+'</span></div><div class="grid">';
+      books.forEach(function(b){
+        h += '<button class="book" data-book="'+b.id+'">'+asciiCover(b)+'<div class="runline">&gt; read '+esc(slug(b))+'</div></button>';
+      });
+      h += '</div></div>';
+    });
+    h += '<footer class="sys">EOF &mdash; '+DATA.books.length+' files listed. type a title to open.</footer>';
+    app.innerHTML = h;
+    bindAmber();
+    each('.filter',function(btn){ btn.onclick=function(){ state.filter=btn.getAttribute('data-cat'); renderLibrary(); window.scrollTo({top:0}); }; });
+    each('.book',function(btn){ btn.onclick=function(){ openBook(btn.getAttribute('data-book')); }; });
+  }
+
+  function openBook(id){ state.bookId=id; state.view='detail'; renderDetail(); window.scrollTo({top:0}); }
+
+  function renderDetail(){
+    var b=bookById(state.bookId), c=catMap[b.category];
+    var h = statusbar();
+    h += '<div class="prompt-line"><span class="ps1">guest@bookshelf:~$</span> read '+esc(slug(b))+'</div>';
+    h += '<button class="back" data-act="lib">&lt; cd ..  (library)</button>';
+    h += '<div class="detail-grid"><div>'+asciiCover(b)+'</div><div>';
+    h += '<h2>'+esc(b.title)+'</h2><div class="by">by '+esc(b.author)+'</div>';
+    h += '<div class="kv"><b>category :</b> '+esc(c.name)+'</div>';
+    h += '<div class="kv"><b>chapters :</b> '+b.chapters.length+'</div>';
+    h += '<div class="kv"><b>words    :</b> '+b.words.toLocaleString()+'</div>';
+    h += '<div class="blurb-box">'+esc(b.blurb)+'</div>';
+    h += '<button class="start-btn" data-act="read">&gt; START READING</button>';
+    h += '</div></div><div class="toc"><div class="toc-h">// TABLE OF CONTENTS</div>';
+    b.chapters.forEach(function(ch,i){
+      h += '<button class="chap" data-ch="'+i+'"><span class="idx">['+String(i+1).padStart(2,'0')+']</span><span class="ct">'+esc(ch.title)+'</span><span class="tp">'+ch.type+'</span></button>';
+    });
+    h += '</div>';
+    app.innerHTML = h;
+    bindAmber();
+    app.querySelector('[data-act="lib"]').onclick=function(){ state.view='library'; renderLibrary(); window.scrollTo({top:0}); };
+    app.querySelector('[data-act="read"]').onclick=function(){ openReader(0); };
+    each('.chap',function(btn){ btn.onclick=function(){ openReader(parseInt(btn.getAttribute('data-ch'),10)); }; });
+  }
+
+  function openReader(idx){ state.view='reader'; state.chapter=idx; renderReader(); window.scrollTo({top:0}); }
+
+  function renderReader(){
+    var b=bookById(state.bookId), idx=state.chapter, ch=b.chapters[idx];
+    var h = '<div class="reader-bar"><span class="rt"><b>'+esc(b.title)+'</b> :: '+esc(ch.title)+'</span>'+
+      '<button class="rbtn" data-act="lib">library</button>'+
+      '<button class="rbtn" data-act="book">toc</button>'+
+      '<select class="jump" aria-label="Jump to chapter">';
+    b.chapters.forEach(function(c,i){ h += '<option value="'+i+'"'+(i===idx?' selected':'')+'>'+esc(String(i+1).padStart(2,'0')+' '+c.title)+'</option>'; });
+    h += '</select>'+
+      '<button class="rbtn" data-act="prev"'+(idx===0?' disabled':'')+'>&lt; prev</button>'+
+      '<button class="rbtn" data-act="next"'+(idx===b.chapters.length-1?' disabled':'')+'>next &gt;</button>'+
+      '<span class="fontctl"><button data-act="smaller" aria-label="Smaller text">A-</button><button data-act="bigger" aria-label="Larger text">A+</button></span>'+
+      '</div>';
+    h += '<div class="read-area"><div class="read-head">'+esc(ch.title)+'</div>';
+    h += '<div class="read-sub">'+esc(b.id)+'/'+esc(ch.title.toLowerCase().replace(/\s+/g,'_'))+'.txt</div>';
+    if(ch.type==='verse'){
+      h += '<div class="verse-body" style="--reading-size:'+state.fontSize+'rem">';
+      ch.lines.forEach(function(ln){ h += (ln.trim()===''?'<div class="vblank"></div>':'<div class="vline">'+fmt(ln)+'</div>'); });
+      h += '</div>';
+    } else {
+      h += '<div class="prose-body" style="--reading-size:'+state.fontSize+'rem">';
+      ch.paragraphs.forEach(function(p){ h += '<p>'+fmt(p)+'</p>'; });
+      h += '</div>';
+    }
+    h += '<div class="eof">-- END OF CHAPTER ['+(idx+1)+'/'+b.chapters.length+'] --<span class="cursor"></span></div>';
+    h += '<div class="reader-foot">'+
+      '<button class="rbtn" data-act="prev"'+(idx===0?' disabled':'')+'>&lt; previous</button>'+
+      '<button class="rbtn" data-act="next"'+(idx===b.chapters.length-1?' disabled':'')+'>next chapter &gt;</button>'+
+      '</div></div>';
+    app.innerHTML = h;
+    function go(d){ var n=idx+d; if(n>=0&&n<b.chapters.length) openReader(n); }
+    each('[data-act="prev"]',function(x){x.onclick=function(){go(-1);};});
+    each('[data-act="next"]',function(x){x.onclick=function(){go(1);};});
+    app.querySelector('[data-act="lib"]').onclick=function(){ state.view='library'; renderLibrary(); window.scrollTo({top:0}); };
+    app.querySelector('[data-act="book"]').onclick=function(){ state.view='detail'; renderDetail(); window.scrollTo({top:0}); };
+    app.querySelector('.jump').onchange=function(e){ openReader(parseInt(e.target.value,10)); };
+    app.querySelector('[data-act="smaller"]').onclick=function(){ state.fontSize=Math.max(.84,state.fontSize-.08); renderReader(); };
+    app.querySelector('[data-act="bigger"]').onclick=function(){ state.fontSize=Math.min(1.7,state.fontSize+.08); renderReader(); };
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(state.view!=='reader') return;
+    var b=bookById(state.bookId);
+    if(e.key==='ArrowLeft'&&state.chapter>0) openReader(state.chapter-1);
+    if(e.key==='ArrowRight'&&state.chapter<b.chapters.length-1) openReader(state.chapter+1);
+  });
+
+  renderLibrary();
+})();
+</script>
+</body>
+</html>

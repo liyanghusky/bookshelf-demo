@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Daily Compendium — A Literary Broadsheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f3ecdb;
+  --paper2:#ece3cf;
+  --ink:#1c1813;
+  --ink-soft:#4a4339;
+  --rule:#2a251d;
+  --faint:#b9ad92;
+  --accent:#7a1f12;
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(0,0,0,.018) 0 1px, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(0,0,0,.018) 0 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(120,90,40,.06), transparent 60%);
+  background-size:7px 7px,11px 11px,100% 100%;
+  color:var(--ink);
+  font-family:'Old Standard TT', Georgia, serif;
+  font-size:18px;line-height:1.5;min-height:100vh;
+}
+::selection{background:var(--ink);color:var(--paper)}
+a{color:inherit;text-decoration:none}
+button,select{font-family:inherit;color:inherit;cursor:pointer;background:none;border:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px 80px;position:relative}
+
+/* masthead */
+header.mast{text-align:center;padding:22px 0 0}
+.mast .topline{display:flex;justify-content:space-between;font-variant:small-caps;letter-spacing:.08em;font-size:12px;color:var(--ink-soft);border-bottom:1px solid var(--rule);padding-bottom:6px}
+.mast h1{
+  font-family:'UnifrakturCook',serif;font-weight:700;
+  font-size:clamp(40px,9vw,96px);line-height:.95;margin:14px 0 6px;color:var(--ink);
+  letter-spacing:.01em;
+}
+.mast .rule-d{border-top:3px double var(--rule);border-bottom:1px solid var(--rule);padding:5px 0;margin-top:6px;
+  display:flex;justify-content:center;gap:22px;flex-wrap:wrap;font-variant:small-caps;letter-spacing:.16em;font-size:12px;color:var(--ink-soft)}
+.mast .motto{font-style:italic;font-size:14px;color:var(--ink-soft);margin:10px 0 0}
+
+/* filters */
+.filters{display:flex;flex-wrap:wrap;justify-content:center;gap:0;margin:22px 0 6px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.filters button{
+  font-variant:small-caps;letter-spacing:.12em;font-size:14px;font-weight:700;
+  padding:10px 16px;color:var(--ink-soft);border-right:1px solid var(--faint);transition:.15s;
+}
+.filters button:first-child{border-left:1px solid var(--faint)}
+.filters button:hover{background:rgba(0,0,0,.05);color:var(--ink)}
+.filters button.active{background:var(--ink);color:var(--paper)}
+
+/* section header */
+.sec-h{text-align:center;margin:40px 0 18px;position:relative}
+.sec-h::before{content:"";position:absolute;top:50%;left:0;right:0;border-top:1px solid var(--rule);z-index:0}
+.sec-h h2{display:inline-block;position:relative;z-index:1;background:var(--paper);padding:0 20px;
+  font-family:'Playfair Display',serif;font-weight:900;font-size:26px;font-variant:small-caps;letter-spacing:.06em}
+.sec-h .tl{font-style:italic;color:var(--ink-soft);font-size:13px;margin-top:2px}
+
+/* library grid -> front-page boxes */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0;border-left:1px solid var(--rule);border-top:1px solid var(--rule)}
+.card{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:18px;transition:.18s;position:relative;cursor:pointer;background:transparent}
+.card:hover{background:var(--paper2)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+.cover{
+  border:1px solid var(--rule);padding:16px 12px;text-align:center;margin-bottom:14px;
+  background:linear-gradient(180deg,#f6f0e1,#ece3cf);position:relative;
+}
+.cover::before{content:"";position:absolute;inset:4px;border:1px solid var(--faint)}
+.cover .kicker{font-variant:small-caps;letter-spacing:.18em;font-size:10px;color:var(--accent);border-bottom:1px solid var(--rule);padding-bottom:6px;margin-bottom:10px}
+.cover .ctitle{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(17px,2.6vw,22px);line-height:1.08;color:var(--ink);margin:2px 0}
+.cover .cauth{font-variant:small-caps;letter-spacing:.1em;font-size:12px;color:var(--ink-soft);margin-top:10px;border-top:1px solid var(--rule);padding-top:6px}
+.cover . deco{}
+.card .head2{font-family:'Playfair Display',serif;font-weight:700;font-size:18px;line-height:1.2;text-align:center}
+.card .byl{text-align:center;font-variant:small-caps;letter-spacing:.08em;font-size:12px;color:var(--ink-soft);margin-top:5px}
+.card .read-cue{text-align:center;font-style:italic;font-size:12px;color:var(--accent);margin-top:8px;opacity:0;transition:.18s}
+.card:hover .read-cue{opacity:1}
+
+/* detail */
+.back{font-variant:small-caps;letter-spacing:.12em;font-size:13px;font-weight:700;color:var(--accent);padding:10px 0;display:inline-block;border-bottom:1px solid transparent;transition:.15s}
+.back:hover{border-color:var(--accent)}
+.detail{max-width:900px;margin:0 auto}
+.detail .kicker{text-align:center;font-variant:small-caps;letter-spacing:.2em;font-size:12px;color:var(--accent);margin-top:6px}
+.detail h2{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(30px,6vw,56px);line-height:1.02;text-align:center;margin:.15em 0;color:var(--ink)}
+.detail .by{text-align:center;font-variant:small-caps;letter-spacing:.12em;font-size:15px;color:var(--ink-soft)}
+.detail .rule-d{border-top:3px double var(--rule);border-bottom:1px solid var(--rule);height:0;margin:14px 0 22px}
+.detail .lead{columns:2;column-gap:34px;column-rule:1px solid var(--faint);font-size:18px;line-height:1.62;text-align:justify}
+.detail .lead::first-letter{font-family:'Playfair Display',serif;font-weight:900;float:left;font-size:4.4em;line-height:.74;padding:6px 10px 0 0;color:var(--accent)}
+.start{display:block;margin:26px auto 0;font-variant:small-caps;letter-spacing:.14em;font-size:15px;font-weight:700;padding:12px 30px;border:2px solid var(--ink);color:var(--ink);background:transparent;transition:.18s}
+.start:hover{background:var(--ink);color:var(--paper)}
+.contents-h{text-align:center;font-family:'Playfair Display',serif;font-weight:900;font-variant:small-caps;letter-spacing:.1em;font-size:22px;margin:40px 0 6px;border-bottom:3px double var(--rule);padding-bottom:8px}
+.chlist{list-style:none;margin:18px 0 0;padding:0;columns:2;column-gap:40px;column-rule:1px solid var(--faint)}
+.chlist li{break-inside:avoid;margin-bottom:2px}
+.chlist button{width:100%;text-align:left;padding:11px 4px;display:flex;align-items:baseline;gap:10px;border-bottom:1px dotted var(--faint);transition:.14s}
+.chlist button:hover{color:var(--accent);padding-left:10px}
+.chlist .num{font-variant:small-caps;color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.08em;min-width:2.6em}
+.chlist .t{font-family:'Playfair Display',serif;font-weight:700;font-size:16px;flex:1}
+.chlist .tag{font-variant:small-caps;font-size:11px;letter-spacing:.08em;color:var(--ink-soft);font-style:italic}
+
+/* reader */
+.reader{max-width:760px;margin:0 auto}
+.rtop{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:3px double var(--rule);padding:10px 0;margin-bottom:26px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.rtop .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctrl{font-variant:small-caps;letter-spacing:.08em;font-size:13px;font-weight:700;padding:7px 13px;border:1px solid var(--rule);color:var(--ink);transition:.15s}
+.ctrl:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.ctrl:disabled{opacity:.35;cursor:not-allowed}
+.rtop select{font-family:'Old Standard TT',serif;font-size:13px;background:var(--paper);color:var(--ink);border:1px solid var(--rule);padding:7px 9px;cursor:pointer}
+.rhead{text-align:center;margin-bottom:8px}
+.rhead .bk{font-variant:small-caps;letter-spacing:.16em;font-size:12px;color:var(--accent)}
+.rhead h2{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(26px,5vw,44px);line-height:1.04;margin:.1em 0}
+.rhead .byline{font-variant:small-caps;letter-spacing:.1em;font-size:13px;color:var(--ink-soft);font-style:italic}
+.rhead .rule-d{border-top:3px double var(--rule);border-bottom:1px solid var(--rule);height:0;margin:16px 0 26px}
+.prose{font-size:var(--rfs,19px);line-height:1.72;color:var(--ink);text-align:justify;hyphens:auto}
+.prose p{margin:0 0 .2em;text-indent:1.5em}
+.prose p:first-of-type{text-indent:0}
+.prose p:first-of-type::first-letter{font-family:'Playfair Display',serif;font-weight:900;float:left;font-size:3.8em;line-height:.72;padding:6px 10px 0 0;color:var(--accent)}
+.verse{font-size:var(--rfs,19px);line-height:1.8;color:var(--ink)}
+.verse .stanza{margin:0 0 1.4em}
+.verse .ln{white-space:pre-wrap}
+.rnav{display:flex;justify-content:space-between;gap:12px;margin:44px 0 8px;border-top:3px double var(--rule);padding-top:20px}
+.colophon{text-align:center;font-style:italic;font-size:12px;color:var(--ink-soft);margin-top:40px;border-top:1px solid var(--rule);padding-top:14px}
+
+@media(max-width:680px){
+  body{font-size:17px}
+  .detail .lead{columns:1}
+  .chlist{columns:1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="topline"><span>Vol. MDCCC &middot; No. XV</span><span>Price Two Pence</span><span>Public Domain Edition</span></div>
+    <h1>The Daily Compendium</h1>
+    <div class="rule-d"><span>Literary Broadsheet</span><span>&bull;</span><span>Fifteen Works in Five Departments</span><span>&bull;</span><span>Printed &amp; Bound</span></div>
+    <p class="motto">"All the prose that's fit to print, and the verse besides."</p>
+  </header>
+  <main id="app"></main>
+  <div class="colophon">Set in Old Standard, Playfair Display &amp; Unifraktur &middot; The Daily Compendium Press</div>
+</div>
+
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  var D=window.BOOKS;
+  var app=document.getElementById('app');
+  var state={view:'library',filter:'all',bookId:null,chapter:0,fs:19};
+  var catName={},catTag={}; D.categories.forEach(function(c){catName[c.id]=c.name;catTag[c.id]=c.tagline;});
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function rich(s){return esc(s).replace(/_([^_]+)_/g,'<em>$1</em>');}
+  function bookById(id){return D.books.filter(function(b){return b.id===id;})[0];}
+  function roman(n){var m=[['X',10],['IX',9],['V',5],['IV',4],['I',1]],r='';m.forEach(function(p){while(n>=p[1]){r+=p[0];n-=p[1];}});return r;}
+
+  function coverHTML(book){
+    return '<div class="cover"><div class="kicker">'+esc(catName[book.category])+'</div>'+
+      '<div class="ctitle">'+esc(book.title)+'</div>'+
+      '<div class="cauth">by '+esc(book.author)+'</div></div>';
+  }
+
+  function renderLibrary(){
+    var html='<div class="filters">';
+    html+='<button data-f="all" class="'+(state.filter==='all'?'active':'')+'">All Departments</button>';
+    D.categories.forEach(function(c){html+='<button data-f="'+c.id+'" class="'+(state.filter===c.id?'active':'')+'">'+esc(c.name)+'</button>';});
+    html+='</div>';
+    var cats=state.filter==='all'?D.categories:D.categories.filter(function(c){return c.id===state.filter;});
+    cats.forEach(function(c){
+      var books=D.books.filter(function(b){return b.category===c.id;});
+      if(!books.length)return;
+      html+='<section><div class="sec-h"><h2>'+esc(c.name)+'</h2><div class="tl">'+esc(c.tagline)+'</div></div><div class="grid">';
+      books.forEach(function(b){
+        html+='<div class="card" tabindex="0" role="button" data-book="'+b.id+'" aria-label="Open '+esc(b.title)+'">'+
+          coverHTML(b)+
+          '<div class="head2">'+esc(b.title)+'</div>'+
+          '<div class="byl">by '+esc(b.author)+'</div>'+
+          '<div class="read-cue">Read the full account &rarr;</div></div>';
+      });
+      html+='</div></section>';
+    });
+    app.innerHTML=html;
+  }
+
+  function renderDetail(){
+    var b=bookById(state.bookId);
+    var html='<div class="detail"><button class="back" data-nav="library">&larr; Back to the Front Page</button>';
+    html+='<div class="kicker">'+esc(catName[b.category])+' Department &middot; '+esc(catTag[b.category])+'</div>';
+    html+='<h2>'+esc(b.title)+'</h2><div class="by">By '+esc(b.author)+'</div><div class="rule-d"></div>';
+    html+='<p class="lead">'+esc(b.blurb)+'</p>';
+    html+='<button class="start" data-read="0">Commence Reading &rarr;</button>';
+    html+='<div class="contents-h">Table of Contents</div><ul class="chlist">';
+    b.chapters.forEach(function(ch,i){
+      html+='<li><button data-read="'+i+'"><span class="num">'+roman(i+1)+'.</span><span class="t">'+esc(ch.title)+'</span>'+
+        '<span class="tag">'+(ch.type==='verse'?'verse':'prose')+'</span></button></li>';
+    });
+    html+='</ul></div>';app.innerHTML=html;window.scrollTo(0,0);
+  }
+
+  function renderReader(){
+    var b=bookById(state.bookId);var ch=b.chapters[state.chapter];
+    var html='<div class="reader"><div class="rtop"><div class="grp">'+
+      '<button class="ctrl" data-nav="library">Front Page</button>'+
+      '<button class="ctrl" data-nav="detail">Contents</button></div><div class="grp">'+
+      '<button class="ctrl" data-step="-1" '+(state.chapter===0?'disabled':'')+'>&larr; Prev</button>'+
+      '<select id="jump">';
+    b.chapters.forEach(function(c,i){html+='<option value="'+i+'" '+(i===state.chapter?'selected':'')+'>'+esc(c.title)+'</option>';});
+    html+='</select><button class="ctrl" data-step="1" '+(state.chapter===b.chapters.length-1?'disabled':'')+'>Next &rarr;</button>'+
+      '<button class="ctrl" data-fs="-1" aria-label="Smaller type">A&#8722;</button>'+
+      '<button class="ctrl" data-fs="1" aria-label="Larger type">A&#43;</button></div></div>';
+    html+='<div class="rhead"><div class="bk">'+esc(catName[b.category])+'</div><h2>'+esc(ch.title)+'</h2>'+
+      '<div class="byline">'+esc(b.title)+' &mdash; by '+esc(b.author)+'</div><div class="rule-d"></div></div>';
+    if(ch.type==='verse'){
+      html+='<div class="verse" style="--rfs:'+state.fs+'px">';var st='';
+      ch.lines.forEach(function(ln){if(ln.trim()===''){if(st){html+='<div class="stanza">'+st+'</div>';st='';}}else st+='<div class="ln">'+rich(ln)+'</div>';});
+      if(st)html+='<div class="stanza">'+st+'</div>';html+='</div>';
+    }else{
+      html+='<div class="prose" style="--rfs:'+state.fs+'px">';
+      ch.paragraphs.forEach(function(p){html+='<p>'+rich(p)+'</p>';});html+='</div>';
+    }
+    html+='<div class="rnav"><button class="ctrl" data-step="-1" '+(state.chapter===0?'disabled':'')+'>&larr; Previous Column</button>'+
+      '<button class="ctrl" data-step="1" '+(state.chapter===b.chapters.length-1?'disabled':'')+'>Next Column &rarr;</button></div></div>';
+    app.innerHTML=html;
+    document.getElementById('jump').addEventListener('change',function(){state.chapter=+this.value;renderReader();});
+    window.scrollTo(0,0);
+  }
+
+  function render(){state.view==='library'?renderLibrary():state.view==='detail'?renderDetail():renderReader();}
+
+  app.addEventListener('click',function(e){
+    var t=e.target.closest('[data-book],[data-nav],[data-read],[data-step],[data-fs],[data-f]');if(!t)return;
+    if(t.dataset.f){state.filter=t.dataset.f;renderLibrary();return;}
+    if(t.dataset.book){state.bookId=t.dataset.book;state.view='detail';render();return;}
+    if(t.dataset.nav){state.view=t.dataset.nav;render();return;}
+    if(t.dataset.read!==undefined){state.chapter=+t.dataset.read;state.view='reader';render();return;}
+    if(t.dataset.step){var b=bookById(state.bookId);var n=state.chapter+ +t.dataset.step;if(n>=0&&n<b.chapters.length){state.chapter=n;renderReader();}return;}
+    if(t.dataset.fs){state.fs=Math.max(15,Math.min(28,state.fs+ +t.dataset.fs*2));renderReader();return;}
+  });
+  app.addEventListener('keydown',function(e){
+    var t=e.target.closest('[data-book]');
+    if(t&&(e.key==='Enter'||e.key===' ')){e.preventDefault();state.bookId=t.dataset.book;state.view='detail';render();}
+  });
+  render();
+})();
+</script>
+</body>
+</html>

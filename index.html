@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bookshelf — 15 Aesthetics · 一份藏书,十五种审美</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b0e; --bg2:#131318; --line:#26262e; --ink:#f4f4f6; --mute:#9a9aa6;
+  --accent:#ff5a3c; --gut:clamp(18px,5vw,56px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"Inter","Noto Sans SC",-apple-system,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 500px at 80% -10%,rgba(255,90,60,.10),transparent 60%),
+                   radial-gradient(700px 500px at 0% 0%,rgba(80,120,255,.08),transparent 55%);
+}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1280px;margin:0 auto;padding:0 var(--gut)}
+
+header{padding:clamp(54px,9vw,120px) 0 clamp(30px,5vw,56px)}
+.kick{font-size:12px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:22px}
+h1{font-family:"Playfair Display","Noto Sans SC",serif;font-weight:700;font-size:clamp(40px,8vw,96px);line-height:1.0;letter-spacing:-.02em}
+h1 em{font-style:italic;color:var(--accent)}
+.sub{margin-top:26px;max-width:60ch;font-size:clamp(15px,1.7vw,19px);color:var(--mute);line-height:1.6}
+.stats{margin-top:40px;display:flex;gap:clamp(26px,5vw,60px);flex-wrap:wrap}
+.stats .s b{display:block;font-size:clamp(28px,3.4vw,44px);font-weight:800;letter-spacing:-.02em;font-family:"Playfair Display",serif}
+.stats .s span{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-top:34px}
+.cat{font-size:12px;font-weight:600;letter-spacing:.04em;padding:7px 14px;border:1px solid var(--line);border-radius:100px;color:var(--mute)}
+.cat b{color:var(--ink)}
+
+.section-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:clamp(40px,6vw,72px) 0 22px;border-top:1px solid var(--line);padding-top:26px}
+.section-h h2{font-size:14px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.section-h span{font-size:13px;color:var(--mute)}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:80px}
+.tile{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--bg2);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;display:flex;flex-direction:column;min-height:260px}
+.tile:hover{transform:translateY(-4px);border-color:#3a3a45;box-shadow:0 18px 50px -20px rgba(0,0,0,.8)}
+.tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.swatch{height:128px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.swatch .name{font-size:22px;font-weight:800;letter-spacing:.01em;z-index:2;text-align:center;padding:0 14px;line-height:1.1}
+.tbody{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tno{position:absolute;top:12px;left:14px;font-size:12px;font-weight:800;letter-spacing:.1em;z-index:3;opacity:.85}
+.tbody h3{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.tbody .desc{font-size:13.5px;color:var(--mute);line-height:1.45;flex:1}
+.tbody .go{margin-top:8px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:6px}
+.tile:hover .go{gap:12px}
+
+footer{border-top:1px solid var(--line);padding:30px 0 60px;color:var(--mute);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+@media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.swatch{height:108px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kick">Bookshelf · A Taste Test</div>
+    <h1>One library,<br><em>fifteen</em> aesthetics.</h1>
+    <p class="sub">同一套公版藏书与阅读器,十五种截然不同的设计审美。内容相同,皮肤各异——比的不是功能,是品味。文本全部来自 Project Gutenberg(公共版权),含中英文经典。</p>
+    <div class="stats">
+      <div class="s" id="stBooks"><b>27</b><span>Books 藏书</span></div>
+      <div class="s"><b>15</b><span>Styles 风格</span></div>
+      <div class="s"><b>5</b><span>Categories 分类</span></div>
+      <div class="s"><b>2</b><span>Languages 中 / EN</span></div>
+    </div>
+    <div class="cats" id="cats"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="section-h">
+    <h2>Choose a Style</h2>
+    <span>点击任意卡片进入该风格的阅读站</span>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer class="wrap">
+  <span>Source — Project Gutenberg (public domain)</span>
+  <span>Demo · 2026</span>
+</footer>
+
+<script src="data/books.js"></script>
+<script>
+(function(){
+  var STYLES=[
+    {n:"01",dir:"01-swiss",name:"Swiss",zh:"瑞士国际主义",desc:"严格网格、Helvetica、红黑白三色,极度克制。",bg:"#ffffff",fg:"#0a0a0a",ac:"#E10600",font:"Inter,sans-serif"},
+    {n:"02",dir:"02-brutalist",name:"Brutalist",zh:"粗野主义",desc:"裸露结构、粗黑边框、高对比,故意的「丑」。",bg:"#e7e7e3",fg:"#000000",ac:"#1a4eff",font:"monospace"},
+    {n:"03",dir:"03-editorial",name:"Editorial",zh:"杂志编辑风",desc:"优雅衬线、大留白、首字下沉,昂贵而克制。",bg:"#f4eee2",fg:"#1a1a1a",ac:"#8a6d3b",font:"'Playfair Display',serif"},
+    {n:"04",dir:"04-dark-academia",name:"Dark Academia",zh:"暗黑学院",desc:"烛光、深棕与暗金、羊皮纸,文学而忧郁。",bg:"#241a13",fg:"#e7d6b0",ac:"#c9a24b",font:"'Playfair Display',serif"},
+    {n:"05",dir:"05-crt-terminal",name:"CRT Terminal",zh:"复古终端",desc:"绿磷光、扫描线、等宽字、闪烁光标。",bg:"#050a06",fg:"#33ff66",ac:"#33ff66",font:"monospace"},
+    {n:"06",dir:"06-wabi-sabi",name:"Wabi-Sabi",zh:"和风侘寂",desc:"巨大留白、墨黑、圆相一笔,安静而不完美。",bg:"#f1eee6",fg:"#1c1c1c",ac:"#6b5b4a",font:"'Noto Serif SC',serif"},
+    {n:"07",dir:"07-art-deco",name:"Art Deco",zh:"装饰艺术",desc:"金黑翡翠、对称几何、旭日纹,极尽华丽。",bg:"#0c0c0c",fg:"#d4af37",ac:"#0f7a5f",font:"'Playfair Display',serif"},
+    {n:"08",dir:"08-cyberpunk",name:"Cyberpunk",zh:"赛博朋克",desc:"霓虹品红与青、故障字、HUD 框,高科技反乌托邦。",bg:"#0a0612",fg:"#00f0ff",ac:"#ff00a0",font:"monospace"},
+    {n:"09",dir:"09-newspaper",name:"Newspaper",zh:"复古报纸",desc:"哥特报头、多栏排版、做旧纸张、首字下沉。",bg:"#ece5d6",fg:"#15110a",ac:"#7a1410",font:"'Playfair Display',serif"},
+    {n:"10",dir:"10-bauhaus",name:"Bauhaus",zh:"包豪斯",desc:"红黄蓝三原色、圆方三角、粗黑网格,几何欢快。",bg:"#f3eee1",fg:"#111111",ac:"#e23b2e",font:"Inter,sans-serif"},
+    {n:"11",dir:"11-glassmorphism",name:"Glassmorphism",zh:"玻璃拟态",desc:"渐变背景、毛玻璃卡片、半透明模糊,清透高级。",bg:"linear-gradient(135deg,#7b2ff7,#f72fb0 55%,#2fcaf7)",fg:"#ffffff",ac:"#ffffff",font:"Inter,sans-serif"},
+    {n:"12",dir:"12-y2k",name:"Y2K",zh:"千禧风",desc:"金属铬光、气泡按钮、星芒闪光,千禧网页怀旧。",bg:"linear-gradient(135deg,#c0c0c0,#9fb6c9)",fg:"#10103a",ac:"#ff3df0",font:"Inter,sans-serif"},
+    {n:"13",dir:"13-cozy-pastel",name:"Cozy Pastel",zh:"温暖手账",desc:"奶油底色、柔和马卡龙、圆角贴纸,温柔治愈。",bg:"#fff5ec",fg:"#5b4a44",ac:"#f29ca3",font:"Inter,sans-serif"},
+    {n:"14",dir:"14-haute-couture",name:"Haute Couture",zh:"高定时装",desc:"纯黑白、极细 Didone 衬线、戏剧留白,Vogue 式高定。",bg:"#ffffff",fg:"#000000",ac:"#000000",font:"'Playfair Display',serif"},
+    {n:"15",dir:"15-vaporwave",name:"Vaporwave",zh:"蒸汽波",desc:"落日渐变、霓虹网格地平线、铬字与片假名。",bg:"linear-gradient(160deg,#2b0a3d,#ff6aad 70%,#00e5ff)",fg:"#fdf0ff",ac:"#00e5ff",font:"monospace"}
+  ];
+  function light(c){ // crude luminance check for text contrast on solid bg
+    var m=/^#([0-9a-f]{6})$/i.exec(c); if(!m) return false;
+    var n=parseInt(m[1],16),r=n>>16,g=(n>>8)&255,b=n&255;
+    return (0.299*r+0.587*g+0.114*b)>150;
+  }
+  var grid=document.getElementById("grid");
+  STYLES.forEach(function(s){
+    var a=document.createElement("a");
+    a.href="styles/"+s.dir+"/index.html";
+    a.className="tile";a.tabIndex=0;
+    var solid=s.bg.indexOf("gradient")===-1;
+    var noColor=(solid&&light(s.bg))?"#0a0a0a":"#ffffff";
+    a.innerHTML=
+      '<div class="swatch" style="background:'+s.bg+'">'+
+        '<span class="tno" style="color:'+noColor+'">'+s.n+'</span>'+
+        '<span class="name" style="color:'+s.fg+';font-family:'+s.font+'">'+s.name+'</span>'+
+        '<span style="position:absolute;right:12px;bottom:12px;width:34px;height:8px;border-radius:4px;background:'+s.ac+'"></span>'+
+      '</div>'+
+      '<div class="tbody"><h3>'+s.name+' · '+s.zh+'</h3>'+
+        '<div class="desc">'+s.desc+'</div>'+
+        '<div class="go">进入阅读站 →</div></div>';
+    grid.appendChild(a);
+  });
+  // live catalog summary from the real data
+  try{
+    var d=window.BOOKS, cats=d.categories, books=d.books;
+    document.getElementById("stBooks").querySelector("b").textContent=books.length;
+    var cn={fiction:"小说",mystery:"悬疑",scifi:"科幻",philosophy:"哲学",poetry:"诗歌"};
+    var wrap=document.getElementById("cats");
+    cats.forEach(function(c){
+      var cnt=books.filter(function(b){return b.category===c.id}).length;
+      var el=document.createElement("span");el.className="cat";
+      el.innerHTML=(cn[c.id]||c.name)+' <b>'+cnt+'</b>';
+      wrap.appendChild(el);
+    });
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
