@@ -54,6 +54,26 @@ META = [
     ("leagues",      "Twenty Thousand Leagues Under the Sea", "Jules Verne", "scifi",
      "Captain Nemo and the Nautilus carry three captives on a wondrous, vengeful voyage beneath the waves."),
 
+    # --- world literature in translation (foreign classics, like-100-Years-of-Solitude in spirit) ---
+    ("quixote",      "Don Quixote",                "Miguel de Cervantes",  "fiction",
+     "A Spanish gentleman, maddened by chivalric romances, rides out to revive knighthood — the first modern novel."),
+    ("crimepunish",  "Crime and Punishment",       "Fyodor Dostoevsky",    "fiction",
+     "A destitute student murders a pawnbroker and is hunted less by the police than by his own conscience."),
+    ("karamazov",    "The Brothers Karamazov",     "Fyodor Dostoevsky",    "fiction",
+     "Faith, doubt, and patricide collide among three brothers and their dissolute father in provincial Russia."),
+    ("warpeace",     "War and Peace",              "Leo Tolstoy",          "fiction",
+     "Aristocratic families, love, and the soul of a nation swept through Napoleon's invasion of Russia."),
+    ("annakarenina", "Anna Karenina",              "Leo Tolstoy",          "fiction",
+     "A married woman's passion for Count Vronsky unravels against the wide canvas of Russian society."),
+    ("bovary",       "Madame Bovary",              "Gustave Flaubert",     "fiction",
+     "A provincial doctor's wife chases romantic illusions into debt and ruin — flawless French realism."),
+    ("montecristo",  "The Count of Monte Cristo",  "Alexandre Dumas",      "fiction",
+     "Wrongly imprisoned, Edmond Dantès escapes, finds a fortune, and engineers an elaborate revenge."),
+    ("metamorphosis","The Metamorphosis",          "Franz Kafka",          "fiction",
+     "Gregor Samsa wakes transformed into a monstrous insect — a parable of alienation and family."),
+    ("arabian",      "The Arabian Nights",         "Andrew Lang (trans.)", "fiction",
+     "Scheherazade spins a thousand nights of genies, voyages, and magic to stay her own execution."),
+
     # --- Chinese classics (zh_*.txt) ---
     ("zh_24264",     "紅樓夢",                       "曹雪芹",                "fiction",
      "賈寶玉與林黛玉、薛寶釵的情緣興衰,寫盡一個鐘鳴鼎食之家的繁華與幻滅。"),
@@ -229,7 +249,22 @@ def split_zh(text):
                     for j in range(0, min(len(body), 30), 6)]
     return chapters
 
+# Chinese blurbs for the foreign classics rendered as Chinese translations
+TRANS_BLURB = {
+    "quixote":      "疯魔于骑士小说的拉曼却绅士,跨上瘦马仗剑出行,要去复兴早已消亡的游侠骑士道——西方第一部现代小说。",
+    "crimepunish":  "穷困潦倒的大学生杀死放高利贷的老太婆,真正追捕他的不是警察,而是他自己的良心。",
+    "karamazov":    "三兄弟与放荡的父亲之间,信仰、怀疑与弑父之罪激烈碰撞——陀思妥耶夫斯基的思想巅峰。",
+    "warpeace":     "拿破仑入侵的烽火中,几大贵族家庭的爱恨与一个民族的灵魂,在恢弘画卷上徐徐铺展。",
+    "annakarenina": "安娜对沃伦斯基的炽烈情爱,在俄国上流社会的广阔背景下一步步走向毁灭。",
+    "bovary":       "外省医生的妻子沉溺于浪漫幻想,渐渐陷入债务与毁灭——法国现实主义的极致之作。",
+    "montecristo":  "蒙冤入狱的唐戴斯越狱寻得巨额宝藏,化身基督山伯爵,展开一场精心编织的复仇。",
+    "metamorphosis":"格里高尔一觉醒来变成巨大的甲虫——一则关于异化、孤独与亲情的现代寓言。",
+    "arabian":      "山鲁佐德以一千零一夜的神灯、飞毯与航海奇谭,为自己、也为天下女子换取生机。",
+}
+
 def build():
+    trans = json.load(open(os.path.join(os.path.dirname(__file__), "translations_zh.json"),
+                           encoding="utf-8"))
     books = []
     for fid, title, author, cat, blurb in META:
         raw = open(os.path.join(RAW, fid + ".txt"), encoding="utf-8", errors="replace").read()
@@ -243,15 +278,27 @@ def build():
         else:
             secs = split_prose(text)[:5]
             chapters = [{"title": t, "type": "prose", "paragraphs": p[:6]} for t, p in secs]
-        if fid in ZH:                                 # Chinese: count characters, not words
-            words = sum(len("".join(c["paragraphs"])) for c in chapters)
+        zh_edition = False
+        if fid in trans:                              # override with my Chinese translation
+            t = trans[fid]
+            title, author = t["title"], t["author"]
+            blurb = TRANS_BLURB.get(fid, blurb)
+            chapters = [{"title": c["title"], "type": "prose", "paragraphs": c["paragraphs"]}
+                        for c in t["chapters"]]
+            zh_edition = True
+        if fid in ZH or zh_edition:                   # Chinese: count characters, not words
+            words = sum(len("".join(c.get("paragraphs", []))) for c in chapters)
         else:
             words = sum(len(" ".join(c.get("paragraphs", c.get("lines", []))).split()) for c in chapters)
-        books.append({
+        book = {
             "id": fid, "title": title, "author": author, "category": cat,
             "blurb": blurb, "words": words, "chapters": chapters,
-        })
-        print("%-14s %2d chapters  ~%5d words" % (fid, len(chapters), words))
+        }
+        if zh_edition:
+            book["edition"] = "中译本 · 外国文学"
+        books.append(book)
+        print("%-14s %2d chapters  ~%5d %s" % (fid, len(chapters), words,
+              "zh-chars" if (fid in ZH or zh_edition) else "words"))
     data = {
         "source": "Project Gutenberg (public domain)",
         "categories": [{"id": c, "name": n, "tagline": t} for c, n, t in CATEGORIES],
