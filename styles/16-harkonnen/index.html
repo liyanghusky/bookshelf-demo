@@ -30,8 +30,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 img{display:block}
 
 .wrap{max-width:1320px;margin:0 auto;padding:0 var(--gut)}
-.view{display:none;animation:fade .5s ease}
+.view{display:none;animation:fade .5s ease;position:relative;z-index:1}
 .view.active{display:block}
+footer.foot{position:relative;z-index:1}
+.arena{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.arena svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120vmax;height:120vmax;opacity:.7}
+.arena .bsun{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);width:min(70vw,560px);height:min(70vw,560px);border-radius:50%;
+  background:radial-gradient(circle at 50% 46%,#ffffff 0 5%,#bdbab0 9%,#2a2a2c 24%,#0a0a0b 40%,transparent 60%);opacity:.16;filter:contrast(1.1)}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .label{font-size:10px;font-weight:500;letter-spacing:.42em;text-transform:uppercase;color:var(--ash)}
 .num{font-variant-numeric:tabular-nums}
@@ -62,8 +67,10 @@ header.mast{border-bottom:1px solid var(--line);position:sticky;top:0;background
 .filter .chip .c{margin-left:8px;opacity:.6}
 
 .catalog{padding:clamp(30px,5vw,60px) 0 100px}
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-.card{grid-column:span 3;background:var(--void);cursor:pointer;display:flex;flex-direction:column;transition:background .15s;outline-offset:-2px}
+.grid{display:flex;gap:1px;overflow-x:auto;overflow-y:hidden;background:var(--line);border:1px solid var(--line);scroll-snap-type:x proximity;scrollbar-width:none;cursor:grab}
+.grid::-webkit-scrollbar{display:none}
+.grid.drag{cursor:grabbing}
+.card{flex:0 0 clamp(230px,62vw,320px);scroll-snap-align:start;background:var(--void);cursor:pointer;display:flex;flex-direction:column;transition:background .15s;outline-offset:-2px}
 .card:hover{background:var(--void2)}
 .card:focus-visible{outline:1px solid var(--bone)}
 .cover{aspect-ratio:3/4;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
@@ -164,6 +171,17 @@ footer.foot .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:
 </head>
 <body>
 
+<div class="arena" aria-hidden="true">
+  <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="#e9e6dd" stroke-width="1" vector-effect="non-scaling-stroke">
+      <circle cx="500" cy="430" r="90" opacity=".22"/><circle cx="500" cy="430" r="170" opacity=".16"/>
+      <circle cx="500" cy="430" r="250" opacity=".12"/><circle cx="500" cy="430" r="340" opacity=".09"/>
+      <circle cx="500" cy="430" r="440" opacity=".07"/><circle cx="500" cy="430" r="560" opacity=".05"/>
+      <g opacity=".08"><line x1="500" y1="430" x2="500" y2="-100"/><line x1="500" y1="430" x2="500" y2="960"/><line x1="500" y1="430" x2="-60" y2="430"/><line x1="500" y1="430" x2="1060" y2="430"/><line x1="500" y1="430" x2="120" y2="50"/><line x1="500" y1="430" x2="880" y2="50"/><line x1="500" y1="430" x2="120" y2="810"/><line x1="500" y1="430" x2="880" y2="810"/></g>
+    </g>
+  </svg>
+  <div class="bsun"></div>
+</div>
 <header class="mast">
   <div class="wrap">
     <div class="brand" id="brandHome" tabindex="0" role="button" aria-label="Home">
@@ -371,5 +389,16 @@ footer.foot .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:
 })();
 </script>
 <script src="../nav-enhance.js"></script>
+<script>
+(function(){
+  var grid=document.getElementById('grid');if(!grid)return;
+  var down=false,sx=0,sl=0,moved=false;
+  grid.addEventListener('pointerdown',function(e){down=true;moved=false;sx=e.clientX;sl=grid.scrollLeft;grid.classList.add('drag');});
+  window.addEventListener('pointermove',function(e){if(!down)return;var dx=e.clientX-sx;if(Math.abs(dx)>5)moved=true;grid.scrollLeft=sl-dx;});
+  window.addEventListener('pointerup',function(){down=false;grid.classList.remove('drag');});
+  grid.addEventListener('click',function(e){if(moved){e.preventDefault();e.stopPropagation();}},true);
+  grid.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){grid.scrollLeft+=e.deltaY;e.preventDefault();}},{passive:false});
+})();
+</script>
 </body>
 </html>
