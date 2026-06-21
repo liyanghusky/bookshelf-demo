@@ -506,6 +506,27 @@ header.mast{
   var $=function(s,el){return (el||document).querySelector(s)};
   function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
   function esc(s){return String(s).replace(/[&<>]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[m]})}
+  function bindActivate(node,fn){
+    node.__activateAction=fn;
+    if(node.__activateBound)return;
+    node.__activateBound=true;
+    var sx=0,sy=0,last=0;
+    function fire(e){
+      var now=Date.now();
+      if(now-last<260)return;
+      last=now;
+      if(e&&e.cancelable)e.preventDefault();
+      node.__activateAction&&node.__activateAction(e);
+    }
+    node.addEventListener("pointerdown",function(e){sx=e.clientX;sy=e.clientY;},{passive:true});
+    node.addEventListener("pointerup",function(e){
+      if(e.button&&e.button!==0)return;
+      var dx=e.clientX-sx,dy=e.clientY-sy;
+      if(Math.sqrt(dx*dx+dy*dy)<10)fire(e);
+    });
+    node.addEventListener("click",fire);
+    node.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){fire(e);}});
+  }
 
   // ===== bespoke epic Giedi-Prime scenes (art-directed, infrared duotone) =====
   function R(s){return function(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};}
@@ -575,9 +596,9 @@ header.mast{
     var g=$("#grid");g.innerHTML="";
     BOOKS.filter(function(b){return state.filter==="all"||b.category===state.filter}).forEach(function(b){
       var card=el("div","card");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label",b.title+" by "+b.author);
+      card.setAttribute("data-book-idx",BOOKS.indexOf(b));
       card.innerHTML='<div class="cover">'+coverHTML(b)+'</div><div class="body"><div class="cat">'+esc(catName[b.category])+'</div><h3>'+esc(b.title)+'</h3><div class="au">'+esc(b.author)+'</div><div class="arr">Open -&gt;</div></div>';
-      var open=function(){openDetail(b);};card.onclick=open;
-      card.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}};
+      bindActivate(card,function(){openDetail(b);});
       g.appendChild(card);
     });
   }
@@ -597,10 +618,9 @@ header.mast{
     book.chapters.forEach(function(ch,i){
       var row=el("div","chrow");row.tabIndex=0;row.setAttribute("role","button");
       row.innerHTML='<div class="n num">'+String(i+1).padStart(2,"0")+'</div><div class="t">'+esc(ch.title)+'</div><div class="tag">'+(ch.type==="verse"?"Verse":"Prose")+'</div>';
-      var go=function(){openReader(book,i);};row.onclick=go;
-      row.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};dl.appendChild(row);
+      bindActivate(row,function(){openReader(book,i);});dl.appendChild(row);
     });
-    $("#dStart").onclick=function(){openReader(book,0);};
+    bindActivate($("#dStart"),function(){openReader(book,0);});
     showView("vDetail");window.scrollTo(0,0);
   }
   function openReader(book,idx){
