@@ -33,7 +33,7 @@ img{display:block}
 .view{display:none;animation:fade .5s ease;position:relative;z-index:1}
 .view.active{display:block}
 footer.foot{position:relative;z-index:1}
-.plate{position:fixed;inset:0;z-index:0;pointer-events:none;background:url(img/statue.jpg) center/cover no-repeat;opacity:.2}
+.plate{position:fixed;inset:0;z-index:0;pointer-events:none;background:url(img/plate06.jpg) center/cover no-repeat;opacity:.2}
 .plate::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 95% at 50% 26%,rgba(5,5,6,.5),rgba(5,5,6,.93) 76%)}
 .arena{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .arena svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120vmax;height:120vmax;opacity:.7}
@@ -293,10 +293,11 @@ footer.foot .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:
   function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
   function esc(s){return String(s).replace(/[&<>]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[m]})}
 
-  var IMG={fiction:"statue",poetry:"statue",philosophy:"statue",mystery:"gears",scifi:"mech"};
+  var NPLATE=8;
+  function plateFor(book){return "plate"+String((BOOKS.indexOf(book)%NPLATE)+1).padStart(2,"0");}
   function coverHTML(book){
     var ci=catIndex[book.category], no=String(ci).padStart(2,"0");
-    var im=IMG[book.category]||"statue", idx=BOOKS.indexOf(book), px=(idx*53)%100, py=(idx*29)%100;
+    var im=plateFor(book), idx=BOOKS.indexOf(book), px=(idx*53)%100, py=(idx*29)%100;
     return '<div class="cv" style="background-image:url(img/'+im+'.jpg);background-position:'+px+'% '+py+'%">'+
       '<div class="cv-no num">'+no+'</div>'+
       '<div class="cv-btm"><div class="cv-title">'+esc(book.title)+'</div>'+
@@ -355,7 +356,7 @@ footer.foot .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:
   }
   function renderChapter(){
     var book=state.book,i=state.chapter,ch=book.chapters[i],isVerse=ch.type==="verse";
-    $("#vReader").style.setProperty("--rimg","url(img/"+(IMG[book.category]||"statue")+".jpg)");
+    $("#vReader").style.setProperty("--rimg","url(img/"+plateFor(book)+".jpg)");
     $("#rBookTitle").textContent=book.title+" — "+book.author;
     $("#rIx").textContent=catName[book.category]+" / "+(isVerse?"Canto ":"Chapter ")+(i+1)+" of "+book.chapters.length;
     $("#rChTitle").textContent=ch.title;$("#rSub").textContent=book.title+" · "+book.author;$("#rJump").value=i;
