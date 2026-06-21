@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HARKONNEN III - Epic Desert House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@200;300;400;500;600&family=Archivo:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#050506; --void2:#0d0d0f; --panel:#101012; --bone:#e9e6dd; --bone2:#c8c5bb;
+  --ash:#86847d; --steel:#26262a; --line:#1d1d20; --gut:clamp(16px,4vw,42px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"Oswald","Noto Sans SC",-apple-system,sans-serif;
+  background:var(--void);color:var(--bone);line-height:1.4;font-weight:300;
+  -webkit-font-smoothing:antialiased;letter-spacing:.02em;position:relative;overflow-x:hidden;
+}
+/* infrared film grain + vignette */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:998;
+  background:radial-gradient(120% 90% at 50% 0%,transparent 45%,rgba(0,0,0,.7) 100%)}
+::selection{background:var(--bone);color:var(--void)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block}
+
+.wrap{max-width:1320px;margin:0 auto;padding:0 var(--gut)}
+.view{display:none;animation:fade .5s ease;position:relative;z-index:1}
+.view.active{display:block}
+footer.foot{position:relative;z-index:1}
+.plate{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;overflow:hidden}
+.plate svg{width:100%;height:100%}
+.arena{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.arena svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120vmax;height:120vmax;opacity:.7}
+.arena .bsun{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);width:min(70vw,560px);height:min(70vw,560px);border-radius:50%;
+  background:radial-gradient(circle at 50% 46%,#ffffff 0 5%,#bdbab0 9%,#2a2a2c 24%,#0a0a0b 40%,transparent 60%);opacity:.16;filter:contrast(1.1)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.label{font-size:10px;font-weight:500;letter-spacing:.42em;text-transform:uppercase;color:var(--ash)}
+.num{font-variant-numeric:tabular-nums}
+
+header.mast{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(5,5,6,.92);backdrop-filter:blur(4px);z-index:30}
+.mast .wrap{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:18px 0 16px}
+.brand{display:flex;align-items:center;gap:16px;cursor:pointer}
+.brand .mark{width:30px;height:30px;border:1px solid var(--bone);border-radius:50%;position:relative;flex:none;
+  background:radial-gradient(circle at 50% 50%,var(--bone) 0 22%,transparent 24%)}
+.brand h1{font-family:"Anton",sans-serif;font-size:clamp(20px,2.5vw,28px);letter-spacing:.16em;text-transform:uppercase;line-height:1}
+.mast .meta{text-align:right;line-height:1.9}
+
+.hero{padding:clamp(56px,11vw,140px) 0 clamp(34px,6vw,70px);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero .sun{position:absolute;right:-6%;top:-30%;width:min(60vw,640px);height:min(60vw,640px);border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#fff 0 8%,#bdbab0 12%,#1a1a1c 40%,transparent 62%);opacity:.18;filter:contrast(1.4) blur(2px);pointer-events:none}
+.hero .idx{color:var(--bone);font-size:11px;letter-spacing:.4em;text-transform:uppercase;margin-bottom:30px}
+.hero h2{font-family:"Anton",sans-serif;font-size:clamp(40px,11vw,150px);line-height:.86;letter-spacing:.01em;text-transform:uppercase;max-width:16ch}
+.hero h2 em{font-style:normal;-webkit-text-stroke:1px var(--bone);color:transparent}
+.hero .lede{margin-top:28px;max-width:48ch;color:var(--bone2);font-size:clamp(15px,1.5vw,17px);font-weight:300;line-height:1.7}
+.hero .stat{margin-top:42px;display:flex;gap:clamp(26px,5vw,76px);flex-wrap:wrap}
+.hero .stat b{font-family:"Anton",sans-serif;font-size:clamp(26px,3vw,42px);display:block;line-height:1}
+.hero .stat span{margin-top:8px;display:block}
+
+.filter{position:sticky;top:64px;background:rgba(5,5,6,.92);backdrop-filter:blur(4px);z-index:20;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:0;padding:0}
+.filter .chip{font-size:11px;font-weight:400;letter-spacing:.28em;text-transform:uppercase;padding:16px 20px;color:var(--ash);border-right:1px solid var(--line);transition:background .12s,color .12s}
+.filter .chip:hover{background:var(--bone);color:var(--void)}
+.filter .chip.on{color:var(--bone);background:var(--steel)}
+.filter .chip .c{margin-left:8px;opacity:.6}
+
+.catalog{padding:clamp(30px,5vw,60px) 0 100px}
+.grid{display:flex;gap:1px;overflow-x:auto;overflow-y:hidden;background:var(--line);border:1px solid var(--line);scroll-snap-type:x proximity;scrollbar-width:none;cursor:grab}
+.grid::-webkit-scrollbar{display:none}
+.grid.drag{cursor:grabbing}
+.card{flex:0 0 clamp(230px,62vw,320px);scroll-snap-align:start;background:var(--void);cursor:pointer;display:flex;flex-direction:column;transition:background .15s;outline-offset:-2px}
+.card:hover{background:var(--void2)}
+.card:focus-visible{outline:1px solid var(--bone)}
+.cover{aspect-ratio:3/4;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.card .body{padding:16px 16px 22px;display:flex;flex-direction:column;gap:9px;flex:1}
+.card .body .cat{font-size:9px;font-weight:500;letter-spacing:.34em;text-transform:uppercase;color:var(--ash)}
+.card .body h3{font-family:"Archivo",sans-serif;font-size:17px;font-weight:600;line-height:1.15;letter-spacing:0}
+.card .body .au{font-size:12px;color:var(--ash);margin-top:auto;padding-top:8px;font-weight:300}
+.card .arr{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--bone);opacity:0;transition:opacity .15s}
+.card:hover .arr{opacity:1}
+
+/* covers - desert body plates */
+.cv{position:absolute;inset:0;background:#070709;display:flex;flex-direction:column;justify-content:space-between;padding:16px;overflow:hidden}
+.cv .scene{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.cv::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,6,.02) 0%,rgba(5,5,6,.12) 44%,rgba(5,5,6,.55) 76%,rgba(5,5,6,.92) 100%);transition:opacity .3s}
+.card:hover .cv::after{opacity:.82}
+.cv .cv-no{font-family:"Anton",sans-serif;font-size:clamp(30px,6vw,46px);line-height:.8;position:relative;z-index:2;color:var(--bone);text-shadow:0 2px 14px #000}
+.cv .cv-btm{position:relative;z-index:2;display:flex;flex-direction:column;gap:10px}
+.cv .cv-title{font-family:"Anton",sans-serif;text-transform:uppercase;font-size:clamp(15px,3.4vw,20px);line-height:.98;letter-spacing:.01em;max-width:13ch;color:var(--bone);text-shadow:0 2px 12px #000}
+.cv .cv-foot{display:flex;justify-content:space-between;align-items:flex-end;font-size:9px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:var(--bone2);text-shadow:0 1px 8px #000}
+
+.detail{padding:clamp(34px,5vw,70px) 0 100px}
+.crumb{display:flex;gap:12px;align-items:center;margin-bottom:clamp(32px,5vw,56px);font-size:10px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--ash)}
+.crumb button:hover{color:var(--bone)}
+.crumb .sep{color:var(--steel)}
+.dwrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(26px,5vw,72px);align-items:start}
+.dcover{aspect-ratio:3/4;border:1px solid var(--line);position:relative;overflow:hidden;max-width:380px}
+.dmeta .cat{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--ash);margin-bottom:20px}
+.dmeta h2{font-family:"Anton",sans-serif;font-size:clamp(34px,5.6vw,72px);line-height:.92;text-transform:uppercase;letter-spacing:.01em}
+.dmeta .by{margin-top:20px;color:var(--ash);font-size:clamp(15px,1.6vw,18px)}
+.dmeta .by b{color:var(--bone);font-weight:400}
+.dmeta .blurb{margin-top:28px;font-size:clamp(15px,1.7vw,19px);line-height:1.7;max-width:52ch;color:var(--bone2);font-weight:300}
+.dstats{display:flex;gap:44px;margin-top:34px;padding:22px 0;border-top:1px solid var(--bone);border-bottom:1px solid var(--line)}
+.dstats b{font-family:"Anton",sans-serif;font-size:26px;display:block;line-height:1}
+.dstats span{margin-top:7px;display:block}
+.start{margin-top:34px;display:inline-flex;align-items:center;gap:16px;background:var(--bone);color:var(--void);padding:17px 28px;font-size:11px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;transition:background .15s,color .15s}
+.start:hover{background:var(--void);color:var(--bone);box-shadow:inset 0 0 0 1px var(--bone)}
+.chl{margin-top:clamp(40px,6vw,72px)}
+.chl .h{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--bone);padding-bottom:12px}
+.chrow{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:padding-left .15s,background .15s}
+.chrow:hover{padding-left:14px;background:var(--void2)}
+.chrow .n{font-family:"Anton",sans-serif;font-size:18px;color:var(--ash);min-width:2.4ch}
+.chrow:hover .n{color:var(--bone)}
+.chrow .t{font-family:"Archivo",sans-serif;font-size:16px;font-weight:500}
+.chrow .tag{font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--ash);border:1px solid var(--line);padding:5px 9px}
+
+.reader{display:none}
+.reader.active{display:block}
+.rbar{position:sticky;top:0;z-index:40;background:rgba(5,5,6,.94);backdrop-filter:blur(4px);border-bottom:1px solid var(--line)}
+.rbar .wrap{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:12px var(--gut)}
+.rbar .left{display:flex;gap:8px}
+.rbtn{font-size:10px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;border:1px solid var(--steel);padding:9px 13px;transition:background .12s,color .12s;white-space:nowrap}
+.rbtn:hover:not(:disabled){background:var(--bone);color:var(--void);border-color:var(--bone)}
+.rbtn:disabled{opacity:.3;cursor:default}
+.rbar .mid{text-align:center;overflow:hidden}
+.rbar .mid .bk{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ash);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rbar .right{display:flex;gap:8px;align-items:center}
+.fz{display:flex;border:1px solid var(--steel)}
+.fz button{width:36px;height:36px;font-size:13px;display:flex;align-items:center;justify-content:center}
+.fz button:hover{background:var(--bone);color:var(--void)}
+.fz .div{width:1px;background:var(--steel)}
+select.jump{font-family:inherit;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--steel);background:var(--void);padding:9px 28px 9px 12px;color:var(--bone);-webkit-appearance:none;appearance:none;cursor:pointer;max-width:210px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23e9e6dd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.progress{height:2px;background:var(--line);position:sticky;top:60px;z-index:39}
+.progress .fill{height:100%;background:var(--bone);width:0}
+
+/* reading surface - bone document */
+#vReader{position:relative;background:#070708}
+.rscene{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.62;overflow:hidden}
+.rscene svg{width:100%;height:100%}
+#vReader::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 95% at 50% 18%,rgba(7,7,8,.45),rgba(7,7,8,.9) 72%)}
+.rbody{position:relative;z-index:1;padding:clamp(40px,8vw,90px) var(--gut) 150px}
+.rgrid{max-width:740px;margin:0 auto;background:rgba(9,9,10,.74);backdrop-filter:blur(3px);border:1px solid var(--line);padding:clamp(30px,5vw,58px) clamp(20px,4vw,46px)}
+.rgrid .rhead{margin-bottom:clamp(32px,5vw,54px);border-bottom:1px solid var(--steel);padding-bottom:24px}
+.rgrid .rhead .ix{font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--ash);margin-bottom:14px}
+.rgrid .rhead h1{font-family:"Anton",sans-serif;font-size:clamp(28px,5vw,46px);text-transform:uppercase;line-height:.96;letter-spacing:.01em;color:var(--bone)}
+.rgrid .rhead .sub{margin-top:14px;font-size:12px;letter-spacing:.04em;color:var(--ash)}
+.prose{font-family:"Archivo","Noto Serif SC",serif;font-size:var(--fs,18px);line-height:1.78;color:#dbd8cf}
+.prose p{margin:0 0 1.35em}
+.verse{font-family:"Archivo",serif;font-size:var(--fs,18px);line-height:1.85;color:#dbd8cf;text-align:center}
+.verse .stanza{margin:0 0 1.6em;white-space:pre-wrap}
+.rfoot{position:relative;z-index:1;padding:0 var(--gut) 90px}
+.rnav{max-width:740px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.rnav button{background:rgba(9,9,10,.82);padding:22px 20px;text-align:left;display:flex;flex-direction:column;gap:8px;transition:background .15s;min-height:86px;color:var(--bone)}
+.rnav button:hover:not(:disabled){background:var(--void2)}
+.rnav button:disabled{opacity:.35;cursor:default}
+.rnav button.nx{text-align:right;align-items:flex-end}
+.rnav .dir{font-size:9px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--ash)}
+.rnav .ttl{font-family:"Archivo",sans-serif;font-size:15px;font-weight:600}
+
+footer.foot{border-top:1px solid var(--line);padding:34px 0;margin-top:0}
+footer.foot .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+
+@media(max-width:1080px){.card{grid-column:span 4}}
+@media(max-width:860px){.card{grid-column:span 6}.dwrap{grid-template-columns:1fr;gap:34px}.dcover{max-width:280px}.filter{top:60px}}
+@media(max-width:560px){.rbar .mid{display:none}.rbar .left .rbtn span{display:none}.rnav{grid-template-columns:1fr}.hero .stat{gap:26px}}
+@media(max-width:380px){.card{grid-column:span 12}}
+
+/* Harkonnen III: less black, more flesh, desert mass, and asymmetry */
+:root{
+  --void:#141312; --void2:#211f1d; --panel:#ebe4d4; --bone:#f1eadb; --bone2:#d7cdb9;
+  --ash:#8d8375; --steel:#3a352f; --line:#4e463d; --sand:#c6b99e; --skin:#9a7c64;
+}
+body{
+  background:
+    radial-gradient(900px 520px at 18% 5%,rgba(241,234,219,.28),transparent 55%),
+    linear-gradient(100deg,#e7dfcf 0 21%,#b7aa91 21% 22%,#211f1d 22% 100%);
+  color:var(--bone);
+}
+body::before{
+  background:
+    linear-gradient(90deg,rgba(241,234,219,.10),transparent 24%,rgba(0,0,0,.58) 100%),
+    radial-gradient(140% 90% at 68% 20%,transparent 40%,rgba(0,0,0,.62) 100%);
+}
+.arena,.plate{display:none}
+header.mast{
+  background:rgba(30,28,25,.70);
+  border-bottom-color:rgba(241,234,219,.22);
+}
+.brand .mark{
+  border-radius:2px;
+  transform:skewX(-12deg);
+  background:linear-gradient(135deg,var(--bone) 0 46%,transparent 47% 100%);
+}
+.brand h1{letter-spacing:.08em}
+.mast .meta .label:first-child{color:#cfc4b1}
+
+.hero{
+  min-height:min(760px,calc(100vh - 64px));
+  padding:clamp(34px,6vw,78px) 0 clamp(28px,4vw,56px);
+  display:grid;
+  align-items:end;
+  border-bottom-color:rgba(241,234,219,.20);
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(229,220,201,.82) 0 24%,rgba(20,19,18,.14) 38%,rgba(20,19,18,.76) 100%),
+    linear-gradient(0deg,rgba(20,19,18,.76),transparent 38%),
+    url("assets/desert-citadel-hero.png") center/cover no-repeat;
+  filter:contrast(1.04) saturate(.82);
+  transform:scale(1.01);
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:38%;
+  background:linear-gradient(0deg,var(--void),transparent);
+  pointer-events:none;
+}
+.hero .sun{display:none}
+.hero>*{position:relative;z-index:1}
+.hero .idx{color:#332d26;margin-bottom:18px;text-shadow:0 1px 12px rgba(241,234,219,.6)}
+.hero h2{
+  max-width:11ch;
+  margin-left:min(42vw,560px);
+  font-size:clamp(48px,9vw,124px);
+  text-shadow:0 18px 48px rgba(0,0,0,.48);
+}
+.hero h2 em{-webkit-text-stroke:1px rgba(241,234,219,.82)}
+.hero .lede{
+  margin-left:min(42vw,560px);
+  max-width:46ch;
+  color:#f0e6d3;
+  text-shadow:0 8px 26px rgba(0,0,0,.60);
+}
+.hero .stat{
+  margin-left:min(42vw,560px);
+  color:#f1eadb;
+}
+.filter{
+  background:rgba(22,20,18,.88);
+  border-bottom-color:rgba(241,234,219,.18);
+}
+.filter .chip:hover{background:var(--sand);color:#151311}
+.grid{
+  background:rgba(241,234,219,.14);
+  border-color:rgba(241,234,219,.18);
+}
+.card{
+  background:#181614;
+}
+.card:hover{background:#211f1d}
+.cover{border-bottom-color:rgba(241,234,219,.14)}
+.cv{
+  background:#151311;
+}
+.cv .scene{display:none}
+.cv img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:var(--pos,50% 50%);
+  filter:grayscale(.72) contrast(1.12) sepia(.12);
+  transform:scale(1.08);
+}
+.cv::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    linear-gradient(90deg,rgba(238,229,209,.14),transparent 28%),
+    radial-gradient(circle at 14% 18%,rgba(241,234,219,.18),transparent 20%),
+    linear-gradient(180deg,rgba(20,19,18,.03),rgba(20,19,18,.82));
+}
+.cv .cv-no,.cv .cv-btm{z-index:2}
+.cv .cv-title{
+  max-width:12ch;
+  text-shadow:0 8px 28px rgba(0,0,0,.82);
+}
+.dcover{box-shadow:0 28px 90px rgba(0,0,0,.38)}
+.rscene::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(241,234,219,.20),transparent 34%,rgba(0,0,0,.72)),
+    url("assets/desert-citadel-hero.png") center/cover no-repeat;
+  filter:grayscale(.62) contrast(1.08);
+}
+.rscene svg{opacity:.18}
+.rgrid{
+  background:rgba(22,20,18,.82);
+  border-color:rgba(241,234,219,.18);
+}
+@media(max-width:900px){
+  .hero h2,.hero .lede,.hero .stat{margin-left:0}
+  .hero::before{background:
+    linear-gradient(0deg,rgba(20,19,18,.90),rgba(20,19,18,.08) 46%,rgba(229,220,201,.54)),
+    url("assets/desert-citadel-hero.png") center/cover no-repeat}
+  .hero .idx{color:var(--bone2)}
+}
+</style>
+</head>
+<body>
+
+<div class="plate" aria-hidden="true"></div>
+<div class="arena" aria-hidden="true">
+  <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="#e9e6dd" stroke-width="1" vector-effect="non-scaling-stroke">
+      <circle cx="500" cy="430" r="90" opacity=".22"/><circle cx="500" cy="430" r="170" opacity=".16"/>
+      <circle cx="500" cy="430" r="250" opacity=".12"/><circle cx="500" cy="430" r="340" opacity=".09"/>
+      <circle cx="500" cy="430" r="440" opacity=".07"/><circle cx="500" cy="430" r="560" opacity=".05"/>
+      <g opacity=".08"><line x1="500" y1="430" x2="500" y2="-100"/><line x1="500" y1="430" x2="500" y2="960"/><line x1="500" y1="430" x2="-60" y2="430"/><line x1="500" y1="430" x2="1060" y2="430"/><line x1="500" y1="430" x2="120" y2="50"/><line x1="500" y1="430" x2="880" y2="50"/><line x1="500" y1="430" x2="120" y2="810"/><line x1="500" y1="430" x2="880" y2="810"/></g>
+    </g>
+  </svg>
+  <div class="bsun"></div>
+</div>
+<header class="mast">
+  <div class="wrap">
+    <div class="brand" id="brandHome" tabindex="0" role="button" aria-label="Home">
+      <span class="mark"></span>
+      <h1>HARKONNEN III</h1>
+    </div>
+    <div class="meta">
+      <div class="label">Epic Desert House</div>
+      <div class="label" style="color:var(--bone)">No.21 / High Contrast</div>
+    </div>
+  </div>
+</header>
+
+<section class="view active" id="vLibrary">
+  <div class="wrap">
+    <div class="hero">
+      <div class="sun"></div>
+      <div class="idx">Black sun, not black screen</div>
+      <h2>Flesh<br>against<br><em>empire.</em></h2>
+      <p class="lede">A harsher house style with more air: bone-white desert glare, bare skin, distant black mountains, and the scale of a ruined palace on the horizon.</p>
+      <div class="stat">
+        <div><b class="num">15</b><span class="label">Volumes</span></div>
+        <div><b class="num">05</b><span class="label">Houses</span></div>
+        <div><b>01</b><span class="label">Body</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="filter" id="filter"></div>
+  <div class="wrap"><div class="catalog"><div class="grid" id="grid"></div></div></div>
+</section>
+
+<section class="view" id="vDetail">
+  <div class="wrap">
+    <div class="detail">
+      <div class="crumb">
+        <button id="cbHome">Archive</button><span class="sep">/</span><span id="cbCat">-</span><span class="sep">/</span><span id="cbTitle" style="color:var(--bone)">-</span>
+      </div>
+      <div class="dwrap">
+        <div class="dcover" id="dCover"></div>
+        <div class="dmeta">
+          <div class="cat" id="dCat">-</div>
+          <h2 id="dTitle">-</h2>
+          <div class="by">by <b id="dAuthor">-</b></div>
+          <p class="blurb" id="dBlurb">-</p>
+          <div class="dstats">
+            <div><b class="num" id="dWords">0</b><span class="label">Words</span></div>
+            <div><b class="num" id="dChaps">0</b><span class="label" id="dChapsLbl">Chapters</span></div>
+            <div><b class="num" id="dCatNo">0</b><span class="label">House No.</span></div>
+          </div>
+          <button class="start" id="dStart">Enter the desert <span>-&gt;</span></button>
+          <div class="chl">
+            <div class="h"><span class="label" id="dListLbl" style="color:var(--bone)">Contents</span><span class="label num" id="dListCount">0</span></div>
+            <div id="dList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reader" id="vReader">
+  <div class="rscene" id="rscene"></div>
+  <div class="rbar">
+    <div class="wrap">
+      <div class="left">
+        <button class="rbtn" id="rBackBook">&lt; <span>Book</span></button>
+        <button class="rbtn" id="rBackLib"><span>Archive</span></button>
+      </div>
+      <div class="mid"><div class="bk" id="rBookTitle">-</div></div>
+      <div class="right">
+        <select class="jump" id="rJump" aria-label="Jump to chapter"></select>
+        <div class="fz"><button id="rFzDown" aria-label="Smaller">A-</button><span class="div"></span><button id="rFzUp" aria-label="Larger">A+</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><div class="fill" id="rProg"></div></div>
+  <div class="rbody">
+    <div class="rgrid">
+      <div class="rhead"><div class="ix" id="rIx">-</div><h1 id="rChTitle">-</h1><div class="sub" id="rSub">-</div></div>
+      <div id="rContent"></div>
+    </div>
+  </div>
+  <div class="rfoot">
+    <div class="rnav">
+      <button id="rPrev" class="pv"><span class="dir">&lt; Previous</span><span class="ttl" id="rPrevT">-</span></button>
+      <button id="rNext" class="nx"><span class="dir">Next &gt;</span><span class="ttl" id="rNextT">-</span></button>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <span class="label" id="footSrc">Source - Project Gutenberg</span>
+    <span class="label">Anton / Epic Desert House / Harkonnen III</span>
+  </div>
+</footer>
+
+<script src="../../data/books.js"></script>
+<script>
+(function(){
+  "use strict";
+  var DATA=window.BOOKS, CATS=DATA.categories, BOOKS=DATA.books;
+  var catName={}, catIndex={};
+  CATS.forEach(function(c,i){catName[c.id]=c.name;catIndex[c.id]=i+1;});
+  var state={filter:"all",book:null,chapter:0,fontIdx:2};
+  var FZ=[15.5,17,18,20,22,24];
+  var $=function(s,el){return (el||document).querySelector(s)};
+  function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+  function esc(s){return String(s).replace(/[&<>]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[m]})}
+
+  // ===== bespoke epic Giedi-Prime scenes (art-directed, infrared duotone) =====
+  function R(s){return function(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};}
+  function sceneSVG(uid,seed){
+    var rnd=R(seed*131+7), type=seed%4, b='';
+    var defs='<defs>'+
+      '<linearGradient id="sky'+uid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070709"/><stop offset="0.52" stop-color="#171720"/><stop offset="1" stop-color="#08080a"/></linearGradient>'+
+      '<radialGradient id="glow'+uid+'" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#e9e6dd" stop-opacity="0.55"/><stop offset="0.5" stop-color="#9a978e" stop-opacity="0.12"/><stop offset="1" stop-color="#9a978e" stop-opacity="0"/></radialGradient>'+
+      '<linearGradient id="haze'+uid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9e6dd" stop-opacity="0"/><stop offset="1" stop-color="#cfccc2" stop-opacity="0.12"/></linearGradient>'+
+      '<radialGradient id="vig'+uid+'" cx="0.5" cy="0.4" r="0.78"><stop offset="0.48" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.62"/></radialGradient></defs>';
+    b+='<rect width="600" height="820" fill="url(#sky'+uid+')"/>';
+    if(type===0){ // black sun + brutalist skyline
+      var sx=160+rnd()*280, sy=170+rnd()*120, sr=120+rnd()*60;
+      b+='<circle cx="'+sx.toFixed(0)+'" cy="'+sy.toFixed(0)+'" r="'+(sr+70).toFixed(0)+'" fill="url(#glow'+uid+')"/>';
+      b+='<circle cx="'+sx.toFixed(0)+'" cy="'+sy.toFixed(0)+'" r="'+sr.toFixed(0)+'" fill="#070709"/>';
+      b+='<circle cx="'+sx.toFixed(0)+'" cy="'+(sy-3).toFixed(0)+'" r="'+sr.toFixed(0)+'" fill="none" stroke="#e9e6dd" stroke-opacity="0.5" stroke-width="2"/>';
+      [['#1d1d26',540,5],['#13131b',590,6],['#08080b',650,7]].forEach(function(rk){
+        for(var i=0;i<rk[2];i++){var x=rnd()*600,w=16+rnd()*42,h=120+rnd()*300;
+          b+='<rect x="'+(x-w/2).toFixed(0)+'" y="'+(rk[1]-h).toFixed(0)+'" width="'+w.toFixed(0)+'" height="'+(h+280).toFixed(0)+'" fill="'+rk[0]+'"/>';
+          b+='<polygon points="'+(x-w/2).toFixed(0)+','+(rk[1]-h).toFixed(0)+' '+x.toFixed(0)+','+(rk[1]-h-w).toFixed(0)+' '+(x+w/2).toFixed(0)+','+(rk[1]-h).toFixed(0)+'" fill="'+rk[0]+'"/>';}
+        b+='<rect x="0" y="'+(rk[1]-46)+'" width="600" height="140" fill="url(#haze'+uid+')"/>';});
+      b+='<rect x="0" y="720" width="600" height="100" fill="#060607"/>';
+    } else if(type===1){ // arena + lone figure
+      b+='<ellipse cx="300" cy="240" rx="230" ry="120" fill="url(#glow'+uid+')"/>';
+      var cy=590+rnd()*40;
+      for(var i=7;i>=1;i--) b+='<ellipse cx="300" cy="'+cy+'" rx="'+(i*72)+'" ry="'+(i*27)+'" fill="none" stroke="#bdbab0" stroke-opacity="'+(0.05+(8-i)*0.02).toFixed(2)+'" stroke-width="1.5"/>';
+      b+='<rect x="294" y="'+(cy-66)+'" width="12" height="58" rx="5" fill="#070709"/><circle cx="300" cy="'+(cy-70)+'" r="7" fill="#070709"/>';
+    } else if(type===2){ // monolith procession
+      b+='<polygon points="150,0 360,0 270,820 80,820" fill="#e9e6dd" fill-opacity="0.05"/>';
+      [['#20202a',46],['#16161e',98],['#0d0d13',160],['#070709',236]].forEach(function(rk){var ox=rk[1],w=60+ox*0.18,h=210+ox;
+        b+='<rect x="'+(ox-w)+'" y="'+(420-h/2)+'" width="'+w+'" height="'+h+'" fill="'+rk[0]+'"/>';
+        b+='<rect x="'+(600-ox)+'" y="'+(420-h/2)+'" width="'+w+'" height="'+h+'" fill="'+rk[0]+'"/>';});
+      b+='<rect x="0" y="540" width="600" height="280" fill="url(#haze'+uid+')"/>';
+    } else { // colossus / idol
+      b+='<circle cx="300" cy="290" r="240" fill="url(#glow'+uid+')"/>';
+      var bx=300+(rnd()-0.5)*70;
+      b+='<rect x="'+(bx-150)+'" y="440" width="300" height="380" fill="#060607"/>';
+      b+='<polygon points="'+(bx-152)+',446 '+bx+',330 '+(bx+152)+',446" fill="#060607"/>';
+      b+='<circle cx="'+bx+'" cy="298" r="50" fill="#060607"/>';
+      b+='<rect x="'+(bx+146)+'" y="330" width="3" height="490" fill="#e9e6dd" opacity="0.2"/>';
+    }
+    b+='<rect width="600" height="820" fill="url(#vig'+uid+')"/>';
+    return '<svg class="scene" viewBox="0 0 600 820" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'+defs+b+'</svg>';
+  }
+  function coverHTML(book){
+    var s=BOOKS.indexOf(book), ci=catIndex[book.category], no=String(ci).padStart(2,"0");
+    var pos=(18+(s*17)%68)+"% "+(28+(s*23)%54)+"%";
+    return '<div class="cv" style="--pos:'+pos+'"><img src="assets/desert-citadel-hero.png" alt="">'+
+      '<div class="cv-no num">'+no+'</div>'+
+      '<div class="cv-btm"><div class="cv-title">'+esc(book.title)+'</div>'+
+      '<div class="cv-foot"><span>'+esc(book.author)+'</span><span>'+esc(catName[book.category])+'</span></div></div>'+
+    '</div>';
+  }
+
+  function buildFilter(){
+    var f=$("#filter");f.innerHTML="";
+    var all=el("button","chip"+(state.filter==="all"?" on":""),'All <span class="c num">'+BOOKS.length+'</span>');
+    all.onclick=function(){state.filter="all";renderLibrary();};f.appendChild(all);
+    CATS.forEach(function(c){
+      var n=BOOKS.filter(function(b){return b.category===c.id}).length;
+      var b=el("button","chip"+(state.filter===c.id?" on":""),esc(c.name)+' <span class="c num">'+n+'</span>');
+      b.onclick=function(){state.filter=c.id;renderLibrary();};f.appendChild(b);
+    });
+  }
+  function renderLibrary(){
+    buildFilter();
+    var g=$("#grid");g.innerHTML="";
+    BOOKS.filter(function(b){return state.filter==="all"||b.category===state.filter}).forEach(function(b){
+      var card=el("div","card");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label",b.title+" by "+b.author);
+      card.innerHTML='<div class="cover">'+coverHTML(b)+'</div><div class="body"><div class="cat">'+esc(catName[b.category])+'</div><h3>'+esc(b.title)+'</h3><div class="au">'+esc(b.author)+'</div><div class="arr">Open -&gt;</div></div>';
+      var open=function(){openDetail(b);};card.onclick=open;
+      card.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}};
+      g.appendChild(card);
+    });
+  }
+  function openDetail(book){
+    state.book=book;var isVerse=book.chapters[0].type==="verse";
+    $("#dCover").innerHTML=coverHTML(book);
+    $("#dCat").textContent=catName[book.category];$("#dTitle").textContent=book.title;
+    $("#dAuthor").textContent=book.author;$("#dBlurb").textContent=book.blurb;
+    $("#dWords").textContent=book.words.toLocaleString();
+    $("#dChaps").textContent=String(book.chapters.length).padStart(2,"0");
+    $("#dChapsLbl").textContent=isVerse?"Cantos":"Chapters";
+    $("#dCatNo").textContent=String(catIndex[book.category]).padStart(2,"0");
+    $("#cbCat").textContent=catName[book.category];$("#cbTitle").textContent=book.title;
+    $("#dListLbl").textContent=isVerse?"Cantos":"Contents";
+    $("#dListCount").textContent=String(book.chapters.length).padStart(2,"0");
+    var dl=$("#dList");dl.innerHTML="";
+    book.chapters.forEach(function(ch,i){
+      var row=el("div","chrow");row.tabIndex=0;row.setAttribute("role","button");
+      row.innerHTML='<div class="n num">'+String(i+1).padStart(2,"0")+'</div><div class="t">'+esc(ch.title)+'</div><div class="tag">'+(ch.type==="verse"?"Verse":"Prose")+'</div>';
+      var go=function(){openReader(book,i);};row.onclick=go;
+      row.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};dl.appendChild(row);
+    });
+    $("#dStart").onclick=function(){openReader(book,0);};
+    showView("vDetail");window.scrollTo(0,0);
+  }
+  function openReader(book,idx){
+    state.book=book;state.chapter=idx;
+    var jump=$("#rJump");jump.innerHTML="";
+    book.chapters.forEach(function(ch,i){var o=document.createElement("option");o.value=i;o.textContent=(i+1)+". "+ch.title;jump.appendChild(o);});
+    renderChapter();showReader();window.scrollTo(0,0);
+  }
+  function renderChapter(){
+    var book=state.book,i=state.chapter,ch=book.chapters[i],isVerse=ch.type==="verse";
+    var rs=$("#rscene");if(rs)rs.innerHTML=sceneSVG("r"+BOOKS.indexOf(book),BOOKS.indexOf(book));
+    $("#rBookTitle").textContent=book.title+" - "+book.author;
+    $("#rIx").textContent=catName[book.category]+" / "+(isVerse?"Canto ":"Chapter ")+(i+1)+" of "+book.chapters.length;
+    $("#rChTitle").textContent=ch.title;$("#rSub").textContent=book.title+" / "+book.author;$("#rJump").value=i;
+    var c=$("#rContent");c.innerHTML="";
+    if(isVerse){
+      var v=el("div","verse"),blocks=[],cur=[];
+      ch.lines.forEach(function(ln){if(ln.trim()===""){if(cur.length){blocks.push(cur);cur=[];}}else cur.push(ln);});
+      if(cur.length)blocks.push(cur);if(!blocks.length)blocks=[ch.lines];
+      blocks.forEach(function(b){var st=el("div","stanza");st.textContent=b.join("\n");v.appendChild(st);});c.appendChild(v);
+    }else{var p=el("div","prose");ch.paragraphs.forEach(function(par){p.appendChild(el("p",null,esc(par)));});c.appendChild(p);}
+    var prev=$("#rPrev"),next=$("#rNext");
+    if(i>0){prev.disabled=false;$("#rPrevT").textContent=book.chapters[i-1].title;}else{prev.disabled=true;$("#rPrevT").textContent="Start";}
+    if(i<book.chapters.length-1){next.disabled=false;$("#rNextT").textContent=book.chapters[i+1].title;}else{next.disabled=true;$("#rNextT").textContent="End";}
+    applyFont();window.scrollTo(0,0);updateProgress();
+  }
+  function go(d){var n=state.chapter+d;if(n<0||n>=state.book.chapters.length)return;state.chapter=n;renderChapter();}
+  function applyFont(){document.documentElement.style.setProperty("--fs",FZ[state.fontIdx]+"px");}
+  function updateProgress(){var s=window.scrollY,h=document.documentElement.scrollHeight-window.innerHeight;$("#rProg").style.width=(h>0?Math.min(100,Math.max(0,s/h*100)):0)+"%";}
+  function showView(id){document.querySelectorAll(".view").forEach(function(v){v.classList.remove("active")});$("#vReader").classList.remove("active");$("#"+id).classList.add("active");document.querySelector(".mast").style.display="";document.querySelector(".foot").style.display="";}
+  function showReader(){document.querySelectorAll(".view").forEach(function(v){v.classList.remove("active")});$("#vReader").classList.add("active");document.querySelector(".mast").style.display="none";document.querySelector(".foot").style.display="none";}
+  function goHome(){showView("vLibrary");window.scrollTo(0,0);}
+
+  $("#brandHome").onclick=goHome;$("#brandHome").onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();goHome();}};
+  $("#cbHome").onclick=goHome;$("#rBackBook").onclick=function(){openDetail(state.book);};$("#rBackLib").onclick=goHome;
+  $("#rPrev").onclick=function(){go(-1);};$("#rNext").onclick=function(){go(1);};
+  $("#rJump").onchange=function(){state.chapter=parseInt(this.value,10);renderChapter();};
+  $("#rFzUp").onclick=function(){state.fontIdx=Math.min(FZ.length-1,state.fontIdx+1);applyFont();};
+  $("#rFzDown").onclick=function(){state.fontIdx=Math.max(0,state.fontIdx-1);applyFont();};
+  window.addEventListener("scroll",function(){if($("#vReader").classList.contains("active"))updateProgress();},{passive:true});
+  $("#footSrc").textContent="Source - "+DATA.source;
+  (function(){var pl=document.querySelector(".plate");if(pl)pl.innerHTML=sceneSVG("plate",2);})();
+  renderLibrary();
+})();
+</script>
+<script src="../nav-enhance.js"></script>
+<script>
+(function(){
+  var grid=document.getElementById('grid');if(!grid)return;
+  var down=false,sx=0,sl=0,moved=false,vx=0,lastX=0,lastT=0,raf=0;
+  function stop(){if(raf){cancelAnimationFrame(raf);raf=0;}}
+  function glide(){
+    raf=requestAnimationFrame(function(){
+      grid.scrollLeft-=vx; vx*=0.94;                 // inertial decay
+      if(Math.abs(vx)>0.4) glide(); else raf=0;
+    });
+  }
+  grid.addEventListener('pointerdown',function(e){down=true;moved=false;stop();sx=lastX=e.clientX;sl=grid.scrollLeft;lastT=e.timeStamp;vx=0;grid.classList.add('drag');grid.setPointerCapture&&grid.setPointerCapture(e.pointerId);});
+  grid.addEventListener('pointermove',function(e){if(!down)return;var dx=e.clientX-sx;if(Math.abs(dx)>5)moved=true;grid.scrollLeft=sl-dx;
+    var dt=e.timeStamp-lastT;if(dt>0)vx=0.6*vx+0.4*((e.clientX-lastX)/dt*16);lastX=e.clientX;lastT=e.timeStamp;});
+  function release(){if(!down)return;down=false;grid.classList.remove('drag');if(Math.abs(vx)>1.5)glide();}
+  grid.addEventListener('pointerup',release);grid.addEventListener('pointercancel',release);
+  grid.addEventListener('click',function(e){if(moved){e.preventDefault();e.stopPropagation();}},true);
+  grid.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){stop();grid.scrollLeft+=e.deltaY;e.preventDefault();}},{passive:false});
+})();
+</script>
+</body>
+</html>
