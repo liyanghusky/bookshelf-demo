@@ -1,6 +1,0 @@
-Harkonnen II background plates (plate01–plate08)
-Source images: Wikimedia Commons (search terms: marble statue / bust, brutalist
-concrete architecture, modernist monument, gothic cathedral, steam turbine,
-industrial machinery, foundry). Rendered to high-contrast infrared B&W (duotone)
-for the Giedi-Prime / House Harkonnen look. See fetch_plates.py.
-For commercial use, verify each source file's license on Commons and attribute.
